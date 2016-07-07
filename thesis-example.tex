@@ -1,0 +1,168 @@
+%-------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%-------------------------------------------------------------------------------
+\documentclass[phd,UKenglish,counters by chapter]{uniud}
+%\pdfoutput=1
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[UKenglish]{babel}
+
+\linespread{1.05}
+\usepackage{microtype}
+
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+\hypersetup{hidelinks}
+
+\usepackage{paralist}
+\setlength{\pltopsep}{.1ex}
+\setlength{\plitemsep}{.1ex}
+
+\usepackage{blindtext}
+
+%-------------------------------------------------------------------------------
+%	TiKZ
+%-------------------------------------------------------------------------------
+\usepackage{tikz}
+
+%-------------------------------------------------------------------------------
+%	FOREIGN
+%-------------------------------------------------------------------------------
+\usepackage[all]{foreign}
+
+%-------------------------------------------------------------------------------
+%	COMMANDS
+%-------------------------------------------------------------------------------
+
+
+%-------------------------------------------------------------------------------
+%	TITLE PAGE
+%-------------------------------------------------------------------------------
+
+\department{\uniudname{dima}}
+\course{\uniudname{dima/informatica}}
+
+\title{Title}
+\author{Candidate}
+\supervisor{Supervisor}
+
+\academicyear{2015/16}
+
+\hypersetup{
+  pdftitle={\thetitle},
+	pdfauthor={\theauthor},
+}
+
+\begin{document}
+
+%-------------------------------------------------------------------------------
+%	FRONT MATTER
+%-------------------------------------------------------------------------------
+
+\frontmatter
+
+\maketitle
+
+\tableofcontents*
+
+%-------------------------------------------------------------------------------
+%	MAIN MATTER
+%-------------------------------------------------------------------------------
+
+\mainmatter
+
+\chapter{Chapter}
+\blindmathtrue
+
+\blindtext
+
+\section{Section}
+
+\blindtext
+
+\subsection{Subsection}
+
+\blindtext
+
+\subsubsection{Subsubsection}
+
+\blindtext
+
+\paragraph{Paragraph}
+
+\blindtext
+
+\subparagraph{Subparagraph}
+
+\blindtext
+
+\section{Lists}
+
+\blindtext[1]
+Itemize:
+\blindlist{itemize}[3]
+
+\blindtext[1]
+Compactitem:
+\blindlist{compactitem}[3]
+
+\blindtext[1]
+Enumerate:
+\blindlist{enumerate}[3]
+
+\blindtext[1]
+Compactenum:
+\blindlist{compactenum}[3]
+\blindtext[1]
+
+\section{Math}
+
+\begin{theorem}
+	\label{thm:first}
+	Theorem
+\end{theorem}
+\begin{proof}
+	Proof
+\end{proof}
+
+\begin{definition}
+	\label{def:first}
+	Definition
+\end{definition}
+
+\begin{remark}
+	\label{rem:first}
+	Remark
+\end{remark}
+
+\begin{figure}[t]
+\begin{center}
+\begin{tikzpicture}
+\draw (0,0) circle (4cm);
+\end{tikzpicture}
+\end{center}
+\caption{This figure has a very long caption\dots let's see if it comes out nice\dots}
+\label{fig:first}
+\end{figure}
+
+Here are some references and citations: \cref{def:first,fig:first,thm:first}. \Cref{rem:first}, \cite{article,book,booklet,conference,inbook,incollection,manual,mastersthesis,misc,phdthesis,proceedings,techreport,unpublished}.
+
+
+\blindmathpaper
+
+%-------------------------------------------------------------------------------
+%	BACK MATTER
+%-------------------------------------------------------------------------------
+
+%\backmatter
+
+\bibliographystyle{plain}
+\bibliography{dummy}
+
+\appendix
+
+\chapter{Appendix}
+\lipsum[1-7]
+
+\end{document}
