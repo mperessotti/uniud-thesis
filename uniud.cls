@@ -1,8 +1,8 @@
 %
-% University of Udine
-% Thesis LaTeX class
+% University of Udine Thesis LaTeX class
 %
-% Copyright (C) 2015 Nicola Gigante
+% Original file by Nicola Gigante
+% modified by Marco Peressotti
 %
 % This file is in the public domain
 %
@@ -120,14 +120,40 @@
 %
 
 % 'uniud' chapter-style
+%\makechapterstyle{uniud}{%
+%  % Minimize vertical spaces
+%  \setlength\afterchapskip{50pt}
+%  \setlength\midchapskip{0pt}
+%  \renewcommand\chapterheadstart\relax
+%
+%  % We don't print "Chapter"
+%  \renewcommand\printchaptername{}
+%
+%  % Fonts and size
+%  \renewcommand\chaptitlefont{%
+%    \normalfont\fontsize{28pt}{26pt}\selectfont\scshape\raggedright%
+%  }
+%  \renewcommand\chapnumfont{%
+%    \normalfont\fontsize{80pt}{80pt}\selectfont\scshape%
+%  }
+%
+%  % Small-caps title (always lowercase)
+%  \renewcommand\printchaptertitle[1]{\chaptitlefont\MakeTextLowercase{##1}}
+%}
+
+% Common hanging space for all heading numbering
+\newcommand\@lefthang[1]{\makebox[0pt][r]{#1\hspace{\marginparsep}}}
+
 \makechapterstyle{uniud}{%
-  % Minimize vertical spaces
-  \setlength\afterchapskip{50pt}
-  \setlength\midchapskip{0pt}
+  %\setlength\beforechapskip{0pt}
+  \setlength\afterchapskip{80pt}
+  \setlength\midchapskip{-52pt}
   \renewcommand\chapterheadstart\relax
 
   % We don't print "Chapter"
   \renewcommand\printchaptername{}
+  
+  %\renewcommand\afterchapternum{}
 
   % Fonts and size
   \renewcommand\chaptitlefont{%
@@ -136,13 +162,16 @@
   \renewcommand\chapnumfont{%
     \normalfont\fontsize{80pt}{80pt}\selectfont\scshape%
   }
-
+  
   % Small-caps title (always lowercase)
-  \renewcommand\printchaptertitle[1]{\chaptitlefont\MakeTextLowercase{##1}}
+  \renewcommand\printchaptertitle[1]{%
+	\chaptitlefont\MakeTextLowercase{##1}%
+  }
+  
+  \renewcommand\printchapternum{%
+      \makebox[0pt][r]{\chapnumfont\thechapter\hspace{\marginparsep}}%
+  }
 }
-
-% Common hanging space for all heading numbering
-\newcommand\@lefthang[1]{\makebox[0pt][r]{#1\hspace{\marginparsep}}}
 
 % 'uniud' head-style
 \makeheadstyles{uniud}{%
@@ -156,7 +185,7 @@
   % Font for sections
   \setsecheadstyle{\Large\scshape\MakeTextLowercase}
   % Font for subsections
-  \setsubsecheadstyle{\large\itshape}
+  \setsubsecheadstyle{\large}
 
   % Font for subsubsections
   \setsubsubsecheadstyle{\scshape\MakeTextLowercase}
@@ -205,6 +234,7 @@
 \RequirePackage{amsthm}
 \RequirePackage{nameref}
 \RequirePackage{hyperref}
+\RequirePackage{cite}
 \RequirePackage[capitalise,noabbrev,nameinlink]{cleveref}
 \RequirePackage{thmtools}
 
@@ -231,6 +261,17 @@
   parent=chapter,
 ]{theorem}
 
+
+\declaretheorem[
+  name=\@cref@name{corollary},
+  sibling=theorem
+]{corollary}
+
+\declaretheorem[
+  name=\@cref@name{proposition},
+  sibling=theorem
+]{proposition}
+
 \declaretheorem[
   name=\@cref@name{lemma},
   sibling=theorem
@@ -243,10 +284,15 @@
 ]{definition}
 
 \declaretheorem[
-  name=\@cref@name{corollary},
+  name=\@cref@name{remark},
   parent=chapter,
   style=remark
-]{corollary}
+]{remark}
+
+\declaretheorem[
+  name=\@cref@name{example},
+  sibling=remark
+]{example}
 
 % Continuous numbering of floats and equations
 % This has to be done after the preamble to support changing it with \uniudset
@@ -263,11 +309,11 @@
 }
 
 % Caption styling
-\precaption{\centering}
-\captiondelim{}
+\precaption{} %\centering
+\captiondelim{.}
 \captionnamefont{\scshape}
-\captiontitlefont{\normalfont\itshape}
-\captionstyle{\\}
+\captiontitlefont{\normalfont\small}
+\captionstyle{\xspace} %\\
 
 % Styling of theorem-like environments
 \declaretheoremstyle[%
@@ -299,6 +345,7 @@
 \newcommand\thesupervisor{}
 \newcommand\thecosupervisor{}
 \newcommand\thetitle{}
+\newcommand\theacademicyear{}
 
 \newcommand\department[1]{\renewcommand\thedepartment{#1}}
 \newcommand\course[1]{\renewcommand\thecourse{#1}}
@@ -306,28 +353,63 @@
 \newcommand\supervisor[1]{\renewcommand\thesupervisor{#1}}
 \newcommand\cosupervisor[1]{\renewcommand\thecosupervisor{#1}}
 \renewcommand\title[1]{\renewcommand\thetitle{#1}}
+\newcommand\academicyear[1]{\renewcommand\theacademicyear{#1}}
 
 \RequirePackage{lipsum}
 
 \renewcommand\maketitle{%
   \newlength\@borders
-  \setlength\@borders{3cm}
+  \setlength\@borders{2cm}
   \begin{titlingpage}
     \calccentering{\unitlength}
-      \begin{adjustwidth*}{\unitlength-\@borders}{-\unitlength-\@borders}
-        \begingroup
-          \centering
-          \includegraphics[width=5cm]{graphics/pollo.pdf}
+      \begin{adjustwidth*}{\unitlength-\@borders}{-\unitlength-\@borders}%
+	    \begingroup%
+          \makebox[0pt][l]{%
+            \raisebox{-1.05\textheight}[0pt][0pt]{%
+              \includegraphics[height=1.1\textheight]{graphics/mezzo-pollo-pallido.pdf}}}\hskip-0pt
+        \endgroup%
+        \begingroup%
+	      \scshape\raggedright\Large%
+	      \setlength\parskip{1ex}%
+	      \uniudname{uniud}\par\vskip-4pt%
+	      \uniudname{department} \thedepartment\par%
+	      \if@phd
+		    \uniudname{phd}
+		  \else
+			\if@master
+			  \uniudname{master}
+			\else
+			  \uniudname{bachelor}
+			\fi
+		  \fi
+	      \thecourse
         \endgroup
-
+        \vfill
         \begingroup
-          \par
-          \scshape\LARGE
           \raggedright
-          \setlength\parskip{2ex}
-          \uniudname{uniud}
-          \par\uniudname{dima}
-          \par\uniudname{master}\\\uniudname{dima/informatica}
+          \fontsize{28pt}{32pt}\scshape\selectfont
+          \thetitle
+        \endgroup
+        \vfill
+        \begingroup
+          \scshape\raggedright
+          \normalsize
+          Candidate:
+          \par\vskip-2pt
+          \Large
+          \theauthor
+          \par\vskip4pt
+          \normalsize
+          Supervisor:
+          \par\vskip-2pt
+          \Large
+          \thesupervisor
+          \par\vskip4pt
+          \normalsize
+          Academic year:
+          \par\vskip-2pt
+          \Large
+          \theacademicyear
         \endgroup
       \end{adjustwidth*}
   \end{titlingpage}
