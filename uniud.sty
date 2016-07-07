@@ -1,0 +1,111 @@
+%
+% University of Udine LaTeX Utility Package
+%
+% Copyright (C) 2015 Nicola Gigante
+%
+% This file is in the public domain
+%
+%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{uniud}[%
+2015/04/23 v0.1 University of Udine LaTeX Utility Package%
+]
+
+\RequirePackage{etoolbox}
+\RequirePackage{xparse}
+\RequirePackage{translations}
+
+%
+% Graphics
+%
+\newcommand\uniudlogo[1][]{\includegraphics[#1]{graphics/pollo.pdf}}
+
+%
+% Macros to register institutional names. Supported languages are italian
+% and english
+
+\DeclareTranslationFallback {uniud}{Universit\`a degli Studi di Udine}
+\DeclareTranslation{English}{uniud}{University of Udine}
+
+\newcommand\newuniudname[3][]{
+  \csuse{newuniudname@#1}{#2}{#3}
+}
+
+\newcommand\newuniudname@[2]{
+  \DeclareTranslationFallback{#1}{#2}
+}
+
+\newcommand\newuniudname@italian[2]{
+  \DeclareTranslationFallback{#1}{#2}
+}
+
+\newcommand\newuniudname@english[2]{
+  \DeclareTranslation{english}{#1}{#2}
+}
+
+\DeclareDocumentCommand\uniudname{o m}{%
+  \IfNoValueTF{#1}{%
+    \GetTranslation{#2}%
+  }{%
+    \GetTranslationFor{#1}{#2}%
+  }%
+}
+
+%
+% Institutional names
+%
+
+%
+% General strings
+%
+\newuniudname[italian]{uniud}{Universit\`a degli Studi di Udine}
+\newuniudname[english]{uniud}{University of Udine}
+
+\newuniudname[italian]{bachelor}{Corso di Laurea Triennale in}
+\newuniudname[english]{bachelor}{Bachelor Degree in}
+
+\newuniudname[italian]{master}{Corso di Laurea Magistrale in}
+\newuniudname[english]{master}{Master Degree in}
+
+\newuniudname[italian]{phd}{Dottorato di Ricerca in}
+\newuniudname[english]{phd}{Ph.D. in}
+
+\newuniudname[italian]{department}{Dipartimento di}
+\newuniudname[english]{department}{Department of}
+
+%
+% DIMA
+%
+\newuniudname[italian]{dima}{Scienze Matematiche Informatiche e Fisiche}
+\newuniudname[english]{dima}{Mathematical and Computer Science}
+
+% Bechelor
+\newuniudname[italian]{dima/informatica}{Informatica}
+\newuniudname[english]{dima/informatica}{Computer Science}
+
+\newuniudname[italian]{dima/matematica}{Matematica}
+\newuniudname[english]{dima/matematica}{Mathematics}
+
+\newuniudname[italian]{dima/stm}{Scienze e Tecnologie Multimediali}
+\newuniudname[english]{dima/stm}{Multimedia Science and Technology}
+
+\newuniudname[italian]{dima/twm}{Tecnologie Web e Multimediali}
+\newuniudname[english]{dima/twm}{Multimedia and Web Technologies}
+
+% Master (which are not also bachelors)
+\newuniudname[italian]{dima/informatica-internazionale}{%
+  Informatica Internazionale%
+}
+\newuniudname[english]{dima/informatica-internazionale}{%
+  Computer Science - International%
+}
+
+\newuniudname[italian]{dima/cmti}{%
+  Comunicazione Multimediale e Tecnologie dell'Informazione%
+}
+\newuniudname[english]{dima/cmti}{%
+  Multimedia Communication and Information Technologies%
+}
+
+\newuniudname[italian]{dima/fisica}{Fisica}
+\newuniudname[english]{dima/fisica}{Physics}
