@@ -119,41 +119,18 @@
 % Head styles
 %
 
-% 'uniud' chapter-style
-%\makechapterstyle{uniud}{%
-%  % Minimize vertical spaces
-%  \setlength\afterchapskip{50pt}
-%  \setlength\midchapskip{0pt}
-%  \renewcommand\chapterheadstart\relax
-%
-%  % We don't print "Chapter"
-%  \renewcommand\printchaptername{}
-%
-%  % Fonts and size
-%  \renewcommand\chaptitlefont{%
-%    \normalfont\fontsize{28pt}{26pt}\selectfont\scshape\raggedright%
-%  }
-%  \renewcommand\chapnumfont{%
-%    \normalfont\fontsize{80pt}{80pt}\selectfont\scshape%
-%  }
-%
-%  % Small-caps title (always lowercase)
-%  \renewcommand\printchaptertitle[1]{\chaptitlefont\MakeTextLowercase{##1}}
-%}
-
 % Common hanging space for all heading numbering
 \newcommand\@lefthang[1]{\makebox[0pt][r]{#1\hspace{\marginparsep}}}
 
+\newlength{\chaptitleheight}
+\newlength{\chapnumheight}
+
 \makechapterstyle{uniud}{%
   %\setlength\beforechapskip{0pt}
-  \setlength\afterchapskip{80pt}
-  \setlength\midchapskip{-52pt}
-  \renewcommand\chapterheadstart\relax
-
-  % We don't print "Chapter"
-  \renewcommand\printchaptername{}
+  %\setlength\midchapskip{0pt} % midskip will be ignored anyway
+  \setlength\afterchapskip{50pt}
   
-  %\renewcommand\afterchapternum{}
+  \renewcommand\chapterheadstart\relax
 
   % Fonts and size
   \renewcommand\chaptitlefont{%
@@ -162,15 +139,34 @@
   \renewcommand\chapnumfont{%
     \normalfont\fontsize{80pt}{80pt}\selectfont\scshape%
   }
-  
+
+  % do not print 'chapter'
+  \renewcommand\printchaptername{}
+    
   % Small-caps title (always lowercase)
   \renewcommand\printchaptertitle[1]{%
-	\chaptitlefont\MakeTextLowercase{##1}%
+  	\chaptitlefont\MakeTextLowercase{##1}%
+    % record the actual height
+	\settototalheight{\chaptitleheight}{\vbox{\chaptitlefont\MakeTextLowercase{##1}}}%
+  }
+
+  \renewcommand\afterchapternum{}
+
+  \renewcommand\printchapternum{%
+	\raisebox{\dimexpr-\height+12pt}[0pt][\dimexpr-\depth]{%
+	  \makebox[0pt][r]{\chapnumfont\thechapter\hspace{\marginparsep}}%
+	}%
+	% record the actual height
+	\settototalheight{\chapnumheight}{\vbox{\chapnumfont\thechapter}}%
   }
   
-  \renewcommand\printchapternum{%
-      \makebox[0pt][r]{\chapnumfont\thechapter\hspace{\marginparsep}}%
-  }
+  \renewcommand\afterchaptertitle{\par\nobreak%
+    % when needed skip some space to compensate for short titles
+	\ifdim \chaptitleheight < \chapnumheight
+    \vskip\dimexpr \chapnumheight - \chaptitleheight
+    \fi
+    \vskip\afterchapskip%
+  }  
 }
 
 % 'uniud' head-style
@@ -386,8 +382,8 @@
         \endgroup
         \vfill
         \begingroup
-          \raggedright
-          \fontsize{28pt}{32pt}\scshape\selectfont
+          \fontsize{28pt}{26pt}\selectfont
+					\scshape\raggedright
           \thetitle
         \endgroup
         \vfill
