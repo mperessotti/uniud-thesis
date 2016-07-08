@@ -1,7 +1,7 @@
 %
 % University of Udine Thesis LaTeX class
 %
-% Original file by Nicola Gigante
+% Original file by Nicola Gigante (c) 2015
 % modified by Marco Peressotti
 %
 % This file is in the public domain
@@ -29,6 +29,8 @@
 \newbool{@phd}
 \newbool{@showframes}
 \newbool{@countersbychapter}
+\newbool{@candidategenderf}
+%\def\thecandidategender{feminine}
 
 % Declare class options
 \pgfkeys{
@@ -45,12 +47,38 @@
     master/.style={degree=master},
     phd/.style={degree=phd},
 %
-    department/.code={\department{#1}},
-    course/.code={\course{#1}},
-    author/.code={\author{#1}},
-    supervisor/.code={\supervisor{#1}},
-    cosupervisor/.code={\cosupervisor{#1}},
-    title/.code={\title{#1}},
+    department/.initial=\uniudname{dima},
+    department/.get=\thedepartment,
+    department/.store in=\thedepartment,
+%
+    course/.initial=\uniudname{dima/informatica},
+    course/.get=\thecourse,
+    course/.store in=\thecourse,
+%
+	candidate name/.value required,
+	candidate name/.store in=\thecandidatename,
+  	candidate email/.value required,
+	candidate email/.store in=\thecandidateemail,
+	candidate address/.get=\thecandidateaddress,
+	candidate address/.store in=\thecandidateaddress,
+	% Italian
+	candidate gender/.is choice,
+	candidate gender/feminine/.code=\booltrue{@candidategenderf},
+    candidate gender/masculine/.code=\boolfalse{@candidategenderf},
+%	candidate gender/feminine/.code=\def\thecandidategender{feminine},
+%  	candidate gender/masculine/.code=\def\thecandidategender{masculine},
+%
+    supervisor/.store in=\thesupervisor,
+    supervisor/.value required,
+%
+    cosupervisor/.store in=\thecosupervisor,
+%
+    title/.store in=\thetitle,
+    title/.value required,
+%
+    academic year/.store in=\theacademicyear,
+    academic year/.value required,
+    year/.forward to=/uniud/academic year,
 %
     showframes/.is if=@showframes,
     showframes/.initial=false,
@@ -335,21 +363,6 @@
 %
 % Title page
 %
-\newcommand\thedepartment{}
-\newcommand\thecourse{}
-\newcommand\theauthor{}
-\newcommand\thesupervisor{}
-\newcommand\thecosupervisor{}
-\newcommand\thetitle{}
-\newcommand\theacademicyear{}
-
-\newcommand\department[1]{\renewcommand\thedepartment{#1}}
-\newcommand\course[1]{\renewcommand\thecourse{#1}}
-\renewcommand\author[1]{\renewcommand\theauthor{#1}}
-\newcommand\supervisor[1]{\renewcommand\thesupervisor{#1}}
-\newcommand\cosupervisor[1]{\renewcommand\thecosupervisor{#1}}
-\renewcommand\title[1]{\renewcommand\thetitle{#1}}
-\newcommand\academicyear[1]{\renewcommand\theacademicyear{#1}}
 
 \RequirePackage{lipsum}
 
@@ -370,14 +383,14 @@
 	      \uniudname{uniud}\par\vskip-4pt%
 	      \uniudname{department} \thedepartment\par%
 	      \if@phd
-		    \uniudname{phd}
-		  \else
-			\if@master
-			  \uniudname{master}
-			\else
-			  \uniudname{bachelor}
-			\fi
-		  \fi
+			    \uniudname{phd}
+			  \else
+					\if@master
+					  \uniudname{master}
+					\else
+					  \uniudname{bachelor}
+					\fi
+		  	\fi
 	      \thecourse
         \endgroup
         \vfill
@@ -390,19 +403,31 @@
         \begingroup
           \scshape\raggedright
           \normalsize
-          Candidate:
+          \if@candidategenderf
+		    \uniudname{candidate (f)}:
+		  \else
+		    \uniudname{candidate (m)}:
+          \fi
           \par\vskip-2pt
           \Large
-          \theauthor
+          \thecandidatename
           \par\vskip4pt
           \normalsize
-          Supervisor:
+          \uniudname{supervisor}:
           \par\vskip-2pt
           \Large
           \thesupervisor
           \par\vskip4pt
+          \if\pgfkeysifdefined{/uniud/cosupervisor}
           \normalsize
-          Academic year:
+          \uniudname{cosupervisor}:
+          \par\vskip-2pt
+          \Large
+          \thecosupervisor
+          \par\vskip4pt
+          \fi
+          \normalsize
+          \uniudname{academicyear}:
           \par\vskip-2pt
           \Large
           \theacademicyear

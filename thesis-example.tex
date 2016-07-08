@@ -1,14 +1,14 @@
 %-------------------------------------------------------------------------------
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %-------------------------------------------------------------------------------
-\documentclass[phd,UKenglish,counters by chapter]{uniud}
-%\pdfoutput=1
+\documentclass[italian,counters by chapter]{uniud}
+\pdfoutput=1
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage[UKenglish]{babel}
+\usepackage[italian]{babel}
 
-\linespread{1.05}
+\linespread{1.04}
 \usepackage{microtype}
 
 \setcounter{secnumdepth}{3}
@@ -40,18 +40,21 @@
 %	TITLE PAGE
 %-------------------------------------------------------------------------------
 
-\department{\uniudname{dima}}
-\course{\uniudname{dima/informatica}}
-
-\title{Title}
-\author{Candidate}
-\supervisor{Supervisor}
-
-\academicyear{2015/16}
+\uniudset{
+	department={\uniudname{dima}}, %default
+	course={\uniudname{dima/informatica}}, % default
+	degree=phd,
+	candidate name={Candidate},
+	candidate email={myemail@spes.uniud.it},
+	candidate gender=masculine,
+	academic year={2015/16},
+	title={Title},
+	supervisor={Supervisor},
+}
 
 \hypersetup{
   pdftitle={\thetitle},
-	pdfauthor={\theauthor},
+  pdfauthor={\thecandidatename},
 }
 
 \begin{document}
