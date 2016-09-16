@@ -1,7 +1,7 @@
 %
 % University of Udine Thesis LaTeX class
 %
-% Original file by Nicola Gigante (c) 2015
+% Original file by Nicola Gigante
 % modified by Marco Peressotti
 %
 % This file is in the public domain
@@ -62,11 +62,9 @@
 	candidate address/.get=\thecandidateaddress,
 	candidate address/.store in=\thecandidateaddress,
 	% Italian
-	candidate gender/.is choice,
-	candidate gender/feminine/.code=\booltrue{@candidategenderf},
-    candidate gender/masculine/.code=\boolfalse{@candidategenderf},
-%	candidate gender/feminine/.code=\def\thecandidategender{feminine},
-%  	candidate gender/masculine/.code=\def\thecandidategender{masculine},
+	candidate use gender/.is choice,
+	candidate use gender/feminine/.code=\booltrue{@candidategenderf},
+    candidate use gender/masculine/.code=\boolfalse{@candidategenderf},
 %
     supervisor/.store in=\thesupervisor,
     supervisor/.value required,
@@ -130,7 +128,7 @@
 \RequirePackage{amsmath,amssymb}
 \RequirePackage{mathtools}
 
-\mathtoolsset{showonlyrefs,showmanualtags}
+%\mathtoolsset{showonlyrefs,showmanualtags}
 
 %
 % Customization of \marginpar. Put here because it is needed for paragraph
@@ -310,7 +308,8 @@
 \declaretheorem[
   name=\@cref@name{remark},
   parent=chapter,
-  style=remark
+  style=remark,
+  qed=$\triangleleft$
 ]{remark}
 
 \declaretheorem[
@@ -341,13 +340,13 @@
 
 % Styling of theorem-like environments
 \declaretheoremstyle[%
-  headfont=\normalfont\scshape,
+  headfont=\normalfont\bfseries\scshape,
   notefont=\normalfont, notebraces={(}{)},
   bodyfont=\normalfont\itshape
 ]{plain}
 
 \declaretheoremstyle[
-  headfont=\normalfont\scshape,
+  headfont=\normalfont\bfseries\scshape,
   notefont=\normalfont, notebraces={(}{)},
   bodyfont=\normalfont\itshape
 ]{definition}
@@ -360,6 +359,9 @@
 ]{remark}
 
 
+%
+% Title page
+%
 %
 % Title page
 %
@@ -395,8 +397,8 @@
         \endgroup
         \vfill
         \begingroup
-          \fontsize{28pt}{26pt}\selectfont
-					\scshape\raggedright
+          \scshape\raggedright
+          \fontsize{36pt}{36pt}\selectfont%
           \thetitle
         \endgroup
         \vfill
