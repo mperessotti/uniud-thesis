@@ -1,12 +1,11 @@
 %-------------------------------------------------------------------------------
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %-------------------------------------------------------------------------------
-\documentclass[italian,counters by chapter]{uniud}
+\documentclass[english,counters by chapter]{uniud}
 \pdfoutput=1
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage[italian]{babel}
 
 \linespread{1.04}
 \usepackage{microtype}
@@ -15,21 +14,45 @@
 \setcounter{tocdepth}{2}
 \hypersetup{hidelinks}
 
+\usepackage{blindtext} % generates demo text
+
+%-------------------------------------------------------------------------------
+%	LISTS, ENUMS etc.
+%-------------------------------------------------------------------------------
+
 \usepackage{paralist}
 \setlength{\pltopsep}{.1ex}
 \setlength{\plitemsep}{.1ex}
 
-\usepackage{blindtext}
+%-------------------------------------------------------------------------------
+%	FOREIGN
+%-------------------------------------------------------------------------------
+\usepackage{babel}
+\usepackage[all]{foreign}
+\defasforeign[mutatismutandis]{mutatis mutandis}
+\defasforeign[Mutatismutandis]{Mutatis mutandis}
+\defasforeign[criteria]{criteria}
+\defasforeign[criterium]{criterium}
+
+
+%-------------------------------------------------------------------------------
+%	BIBLATEX
+%-------------------------------------------------------------------------------
+
+\usepackage[
+	backend=bibtex, %backend=biber
+	style=numeric,
+	firstinits=true,
+	doi=false,
+	isbn=false,
+	url=false
+	]{biblatex}
+\addbibresource{dummy.bib} %biblio sources
 
 %-------------------------------------------------------------------------------
 %	TiKZ
 %-------------------------------------------------------------------------------
 \usepackage{tikz}
-
-%-------------------------------------------------------------------------------
-%	FOREIGN
-%-------------------------------------------------------------------------------
-\usepackage[all]{foreign}
 
 %-------------------------------------------------------------------------------
 %	COMMANDS
@@ -48,7 +71,7 @@
 	candidate email={hopper.grace@spes.uniud.it},
 	candidate use gender=feminine,
 	academic year={2015/16},
-	title={New Types of Irreducibility Criteria},
+	title={New Types of\\[4pt]Irreducibility Criteria},
 	supervisor={{\O}ystein Ore},
 }
 
@@ -129,6 +152,31 @@ Compactenum:
 	Proof
 \end{proof}
 
+\begin{corollary}
+	\label{cor:first}
+	Corollary
+\end{corollary}
+
+\begin{proposition}
+	\label{prop:first}
+	Proposition
+\end{proposition}
+
+\begin{lemma}
+	\label{lem:first}
+	Lemma
+\end{lemma}
+
+\begin{conjecture}
+	\label{conj:first}
+	Conjecture
+\end{conjecture}
+
+\begin{assumption}
+	\label{asmp:first}
+	Assumption
+\end{assumption}
+
 \begin{definition}
 	\label{def:first}
 	Definition
@@ -140,19 +188,18 @@ Compactenum:
 \end{remark}
 
 \begin{figure}[t]
-\begin{center}
-\begin{tikzpicture}
-\draw (0,0) circle (4cm);
-\end{tikzpicture}
-\end{center}
-\caption{This figure has a very long caption\dots let's see if it comes out nice\dots}
-\label{fig:first}
+	\begin{center}
+	\begin{tikzpicture}
+		\draw (0,0) circle (4cm);
+	\end{tikzpicture}
+	\end{center}
+	\caption{This figure has a very long caption\dots let's see if it comes out nice\dots}
+	\label{fig:first}
 \end{figure}
 
-Here are some references and citations: \cref{def:first,fig:first,thm:first}. \Cref{rem:first}, \cite{article,book,booklet,conference,inbook,incollection,manual,mastersthesis,misc,phdthesis,proceedings,techreport,unpublished}.
+\section{Cross referencing and citations}
 
-
-\blindmathpaper
+Here are some references and citations: \Cref{def:first,fig:first,conj:first}. \Cref{rem:first}, \cite{article,book,booklet,conference,inbook,incollection,manual,mastersthesis,misc,phdthesis,proceedings,techreport,unpublished}.
 
 %-------------------------------------------------------------------------------
 %	BACK MATTER
@@ -160,8 +207,7 @@ Here are some references and citations: \cref{def:first,fig:first,thm:first}. \C
 
 %\backmatter
 
-\bibliographystyle{plain}
-\bibliography{dummy}
+\printbibliography
 
 \appendix
 

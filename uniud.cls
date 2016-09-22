@@ -61,7 +61,7 @@
 	candidate email/.store in=\thecandidateemail,
 	candidate address/.get=\thecandidateaddress,
 	candidate address/.store in=\thecandidateaddress,
-	% Italian
+%
 	candidate use gender/.is choice,
 	candidate use gender/feminine/.code=\booltrue{@candidategenderf},
     candidate use gender/masculine/.code=\boolfalse{@candidategenderf},
@@ -242,6 +242,7 @@
 
 \pagestyle{uniud}
 
+%\RequirePackage{biblatex}
 %
 % Translatable strings
 %
@@ -250,15 +251,33 @@
 \DeclareTranslationFallback {listings}{Listings}
 \DeclareTranslation{Italian}{listings}{Listati}
 
+\DeclareTranslationFallback{assumption}{assumption}
+\DeclareTranslation{italian}{assumption}{assunzione}
+\DeclareTranslationFallback{assumptions}{assumptions}
+\DeclareTranslation{italian}{assumptions}{assunzioni}
+
+\DeclareTranslationFallback{conjecture}{conjecture}
+\DeclareTranslation{italian}{conjecture}{congettura}
+\DeclareTranslationFallback{conjectures}{conjectures}
+\DeclareTranslation{italian}{conjectures}{congetture}
+
 %
 % Floats, captions, theorems, cross-references, ecc...
 %
 \RequirePackage{amsthm}
 \RequirePackage{nameref}
 \RequirePackage{hyperref}
-\RequirePackage{cite}
 \RequirePackage[capitalise,noabbrev,nameinlink]{cleveref}
 \RequirePackage{thmtools}
+
+%
+% Ensure biblatex is loaded without messing with loadtime options
+%
+\BeforeBeginEnvironment{document}{
+	\RequirePackage{babel}
+	\RequirePackage{csquotes}
+	\RequirePackage{biblatex}
+}
 
 % Turn off memoir automatic reset of float counters
 \renewcommand\@memfront@floats{}
@@ -276,6 +295,7 @@
 % This trick is needed to defer the expansion of the cref macro until the
 % typesetting point, because the macro is undefined at this point of the
 % preamble
+\newcommand\@Cref@name[1]{\noexpand\noexpand\noexpand\csuse{Cref@#1@name}}
 \newcommand\@cref@name[1]{\noexpand\noexpand\noexpand\csuse{cref@#1@name}}
 
 \declaretheorem[
@@ -299,11 +319,25 @@
   sibling=theorem
 ]{lemma}
 
+\crefname{conjecture}{\GetTranslation{conjecture}}{\GetTranslation{conjectures}}
+\Crefname{conjecture}{\MakeCapital{\GetTranslation{conjecture}}}{\MakeCapital{\GetTranslation{conjectures}}}
+\declaretheorem[
+  name=\@cref@name{conjecture},
+  sibling=theorem
+]{conjecture}
+
 \declaretheorem[
   name=\@cref@name{definition},
   parent=chapter,
   style=definition
 ]{definition}
+
+\crefname{assumption}{\GetTranslation{assumption}}{\GetTranslation{assumptions}}
+\Crefname{assumption}{\MakeCapital{\GetTranslation{assumption}}}{\MakeCapital{\GetTranslation{assumptions}}}
+\declaretheorem[
+  name=\@cref@name{assumption},
+  sibling=definition
+]{assumption}
 
 \declaretheorem[
   name=\@cref@name{remark},
@@ -325,9 +359,9 @@
     \counterwithout{listing}{chapter}
     \counterwithout{equation}{chapter}
     \counterwithout{theorem}{chapter}
-    \counterwithout{lemma}{chapter}
+%    \counterwithout{lemma}{chapter}
     \counterwithout{definition}{chapter}
-    \counterwithout{corollary}{chapter}
+%    \counterwithout{corollary}{chapter}
   }{}
 }
 
