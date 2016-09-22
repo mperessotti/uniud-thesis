@@ -30,7 +30,6 @@
 \newbool{@showframes}
 \newbool{@countersbychapter}
 \newbool{@candidategenderf}
-%\def\thecandidategender{feminine}
 
 % Declare class options
 \pgfkeys{
@@ -396,11 +395,6 @@
 %
 % Title page
 %
-%
-% Title page
-%
-
-\RequirePackage{lipsum}
 
 \renewcommand\maketitle{%
   \newlength\@borders
