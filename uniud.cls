@@ -294,7 +294,6 @@
 % This trick is needed to defer the expansion of the cref macro until the
 % typesetting point, because the macro is undefined at this point of the
 % preamble
-\newcommand\@Cref@name[1]{\noexpand\noexpand\noexpand\csuse{Cref@#1@name}}
 \newcommand\@cref@name[1]{\noexpand\noexpand\noexpand\csuse{cref@#1@name}}
 
 \declaretheorem[
@@ -318,7 +317,7 @@
   sibling=theorem
 ]{lemma}
 
-\crefname{conjecture}{\GetTranslation{conjecture}}{\GetTranslation{conjectures}}
+%\crefname{conjecture}{\GetTranslation{conjecture}}{\GetTranslation{conjectures}}
 \Crefname{conjecture}{\MakeCapital{\GetTranslation{conjecture}}}{\MakeCapital{\GetTranslation{conjectures}}}
 \declaretheorem[
   name=\@cref@name{conjecture},
@@ -331,7 +330,7 @@
   style=definition
 ]{definition}
 
-\crefname{assumption}{\GetTranslation{assumption}}{\GetTranslation{assumptions}}
+%\crefname{assumption}{\GetTranslation{assumption}}{\GetTranslation{assumptions}}
 \Crefname{assumption}{\MakeCapital{\GetTranslation{assumption}}}{\MakeCapital{\GetTranslation{assumptions}}}
 \declaretheorem[
   name=\@cref@name{assumption},
