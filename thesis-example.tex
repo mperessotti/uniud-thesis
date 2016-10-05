@@ -8,10 +8,20 @@
 \usepackage[utf8]{inputenc}
 
 \linespread{1.04}
-\usepackage{microtype}
+\usepackage[
+	tracking=smallcaps,
+	letterspace=20
+]{microtype}
 
+% section numbering
+% depth 3: subsubsections but not subsubsubsections
 \setcounter{secnumdepth}{3}
+
+% table of contents
+% depth 2: sections and subsections
 \setcounter{tocdepth}{2}
+
+% do not highlight hyperlinks such as citations
 \hypersetup{hidelinks}
 
 \usepackage{lipsum,blindtext} % generates demo text
@@ -41,9 +51,15 @@
 
 \usepackage[
 	backend=bibtex, %backend=biber
-	style=numeric,
-	firstinits=true,
-	doi=false,
+	% numeric citations with compression of consecutive numers
+	% e.g. [1-4] instead of [1,2,3,4]
+	style=numeric-comp,
+	% use given name initials for authors
+	giveninits=true,
+	% sort references by author names, year and then title
+	sorting=nyt,
+	% do not print urls or doi and isbn identifiers
+	doi=false, 
 	isbn=false,
 	url=false
 	]{biblatex}
