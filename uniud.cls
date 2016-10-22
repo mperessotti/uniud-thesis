@@ -54,35 +54,35 @@
     course/.get=\thecourse,
     course/.store in=\thecourse,
 %
-	candidate name/.value required,
-	candidate name/.store in=\thecandidatename,
-  	candidate email/.value required,
-	candidate email/.store in=\thecandidateemail,
-	candidate address/.get=\thecandidateaddress,
-	candidate address/.store in=\thecandidateaddress,
+		candidate name/.value required,
+		candidate name/.store in=\thecandidatename,
+		candidate email/.value required,
+		candidate email/.store in=\thecandidateemail,
+		candidate address/.get=\thecandidateaddress,
+		candidate address/.store in=\thecandidateaddress,
 %
-	candidate use gender/.is choice,
-	candidate use gender/feminine/.code=\booltrue{@candidategenderf},
-    candidate use gender/masculine/.code=\boolfalse{@candidategenderf},
+		candidate use gender/.is choice,
+		candidate use gender/feminine/.code=\booltrue{@candidategenderf},
+	  candidate use gender/masculine/.code=\boolfalse{@candidategenderf},
 %
-    supervisor/.store in=\thesupervisor,
-    supervisor/.value required,
+	  supervisor/.store in=\thesupervisor,
+	  supervisor/.value required,
 %
-    cosupervisor/.store in=\thecosupervisor,
+	  cosupervisor/.store in=\thecosupervisor,
 %
-    title/.store in=\thetitle,
-    title/.value required,
+	  title/.store in=\thetitle,
+	  title/.value required,
 %
-    academic year/.store in=\theacademicyear,
-    academic year/.value required,
-    year/.forward to=/uniud/academic year,
+	  academic year/.store in=\theacademicyear,
+	  academic year/.value required,
+	  year/.forward to=/uniud/academic year,
 %
-    showframes/.is if=@showframes,
-    showframes/.initial=false,
+	  showframes/.is if=@showframes,
+	  showframes/.initial=false,
 %
-    counters by chapter/.is if=@countersbychapter,
-    counters by chapter/.initial=false,
-    countersbychapter/.forward to=/uniud/counters by chapter
+	  counters by chapter/.is if=@countersbychapter,
+	  counters by chapter/.initial=false,
+	  countersbychapter/.forward to=/uniud/counters by chapter
 }
 
 % Command to set uniud options
@@ -229,8 +229,8 @@
 \copypagestyle{titlingpage}{empty}
 
 \makepagestyle{uniud}
-\makeevenhead{uniud}{\thepage}{}{\scshape\leftmark}
-\makeoddhead{uniud}{\scshape\rightmark}{}{\thepage}
+\makeevenhead{uniud}{\thepage}{}{\scshape\MakeTextLowercase\leftmark}
+\makeoddhead{uniud}{\scshape\MakeTextLowercase\rightmark}{}{\thepage}
 \makeoddfoot{uniud}{}{}{}
 \makeevenfoot{uniud}{}{}{}
 
@@ -398,69 +398,84 @@
 \renewcommand\maketitle{%
   \newlength\@borders
   \setlength\@borders{2cm}
+	\let\cleardoublepage\clearpage
+	% cover page
   \begin{titlingpage}
     \calccentering{\unitlength}
-      \begin{adjustwidth*}{\unitlength-\@borders}{-\unitlength-\@borders}%
+    \begin{adjustwidth*}{\unitlength-\@borders}{-\unitlength-\@borders}%
 	    \begingroup%
-          \makebox[0pt][l]{%
-            \raisebox{-1.05\textheight}[0pt][0pt]{%
-              \includegraphics[height=1.1\textheight]{graphics/mezzo-pollo-pallido.pdf}}}\hskip-0pt
-        \endgroup%
-        \begingroup%
+        \makebox[0pt][l]{%
+          \raisebox{-1.05\textheight}[0pt][0pt]{%
+            \includegraphics[height=1.1\textheight]{graphics/mezzo-pollo-pallido.pdf}}}\hskip-0pt
+      \endgroup%
+      \begingroup%
 	      \scshape\raggedright\Large%
 	      \setlength\parskip{1ex}%
 	      \uniudname{uniud}\par\vskip-4pt%
 	      \uniudname{department} \thedepartment\par%
-	      \if@phd
-			    \uniudname{phd}
-			  \else
-					\if@master
-					  \uniudname{master}
-					\else
-					  \uniudname{bachelor}
-					\fi
-		  	\fi
-	      \thecourse
-        \endgroup
-        \vfill
-        \begingroup
-          \scshape\raggedright
-          \fontsize{36pt}{36pt}\selectfont%
-          \thetitle
-        \endgroup
-        \vfill
-        \begingroup
-          \scshape\raggedright
-          \normalsize
-          \if@candidategenderf
-		    \uniudname{candidate (f)}:
-		  \else
-		    \uniudname{candidate (m)}:
-          \fi
-          \par\vskip-2pt
-          \Large
-          \thecandidatename
-          \par\vskip4pt
-          \normalsize
-          \uniudname{supervisor}:
-          \par\vskip-2pt
-          \Large
-          \thesupervisor
-          \par\vskip4pt
-          \if\pgfkeysifdefined{/uniud/cosupervisor}
-          \normalsize
-          \uniudname{cosupervisor}:
-          \par\vskip-2pt
-          \Large
-          \thecosupervisor
-          \par\vskip4pt
-          \fi
-          \normalsize
-          \uniudname{academicyear}:
-          \par\vskip-2pt
-          \Large
-          \theacademicyear
-        \endgroup
-      \end{adjustwidth*}
+	      \if@phd%
+			    \uniudname{phd}%
+			  \else%
+					\if@master%
+					  \uniudname{master}%
+					\else%
+					  \uniudname{bachelor}%
+					\fi%
+		  	\fi%
+      	\thecourse%
+      \endgroup%
+      \vfill%
+      \begingroup%
+        \scshape\raggedright
+        \fontsize{36pt}{36pt}\selectfont%
+        \thetitle
+      \endgroup%
+      \vfill%
+      \begingroup%
+        \scshape\raggedright%
+				\normalsize%
+        \if@candidategenderf%
+			    \uniudname{candidate (f)}:%
+			  \else%
+	    		\uniudname{candidate (m)}:%
+        \fi%
+        \par\vskip-2pt%
+        \Large%
+        \thecandidatename%
+        \par\vskip4pt%
+        \normalsize%
+        \uniudname{supervisor}:%
+        \par\vskip-2pt%
+        \Large%
+        \thesupervisor%
+        \par\vskip4pt%
+        \if\pgfkeysifdefined{/uniud/cosupervisor}%
+          \normalsize%
+          \uniudname{cosupervisor}:%
+          \par\vskip-2pt%
+          \Large%
+          \thecosupervisor%
+          \par\vskip4pt%
+        \fi%
+        \normalsize%
+        \uniudname{academicyear}:%
+        \par\vskip-2pt%
+        \Large%
+        \theacademicyear%
+      \endgroup%
+    \end{adjustwidth*}
+  \end{titlingpage}
+	% cover's back
+	\begin{titlingpage}
+    \calccentering{\unitlength}
+    \begin{adjustwidth*}{\unitlength-\@borders}{-\unitlength-\@borders}%
+      \begingroup%
+        \raggedright%
+				\normalsize%
+        \thecandidateemail%
+        \par\vskip4pt%
+        \thecandidateaddress%
+      \endgroup%
+    \end{adjustwidth*}
   \end{titlingpage}
 }
