@@ -54,35 +54,35 @@
     course/.get=\thecourse,
     course/.store in=\thecourse,
 %
-		candidate name/.value required,
-		candidate name/.store in=\thecandidatename,
-		candidate email/.value required,
-		candidate email/.store in=\thecandidateemail,
-		candidate address/.get=\thecandidateaddress,
-		candidate address/.store in=\thecandidateaddress,
+	candidate name/.value required,
+	candidate name/.store in=\thecandidatename,
+  	candidate email/.value required,
+	candidate email/.store in=\thecandidateemail,
+	candidate address/.get=\thecandidateaddress,
+	candidate address/.store in=\thecandidateaddress,
 %
-		candidate use gender/.is choice,
-		candidate use gender/feminine/.code=\booltrue{@candidategenderf},
-	  candidate use gender/masculine/.code=\boolfalse{@candidategenderf},
+	candidate use gender/.is choice,
+	candidate use gender/feminine/.code=\booltrue{@candidategenderf},
+    candidate use gender/masculine/.code=\boolfalse{@candidategenderf},
 %
-	  supervisor/.store in=\thesupervisor,
-	  supervisor/.value required,
+    supervisor/.store in=\thesupervisor,
+    supervisor/.value required,
 %
-	  cosupervisor/.store in=\thecosupervisor,
+    cosupervisor/.store in=\thecosupervisor,
 %
-	  title/.store in=\thetitle,
-	  title/.value required,
+    title/.store in=\thetitle,
+    title/.value required,
 %
-	  academic year/.store in=\theacademicyear,
-	  academic year/.value required,
-	  year/.forward to=/uniud/academic year,
+    academic year/.store in=\theacademicyear,
+    academic year/.value required,
+    year/.forward to=/uniud/academic year,
 %
-	  showframes/.is if=@showframes,
-	  showframes/.initial=false,
+    showframes/.is if=@showframes,
+    showframes/.initial=false,
 %
-	  counters by chapter/.is if=@countersbychapter,
-	  counters by chapter/.initial=false,
-	  countersbychapter/.forward to=/uniud/counters by chapter
+    counters by chapter/.is if=@countersbychapter,
+    counters by chapter/.initial=false,
+    countersbychapter/.forward to=/uniud/counters by chapter
 }
 
 % Command to set uniud options
@@ -241,7 +241,6 @@
 
 \pagestyle{uniud}
 
-%\RequirePackage{biblatex}
 %
 % Translatable strings
 %
@@ -272,10 +271,15 @@
 %
 % Ensure biblatex is loaded without messing with loadtime options
 %
+\newbool{@BiblatexOnce}
+\setbool{@BiblatexOnce}{true} 
 \BeforeBeginEnvironment{document}{
-	\RequirePackage{babel}
-	\RequirePackage{csquotes}
-	\RequirePackage{biblatex}
+	\if@BiblatexOnce
+		\setbool{@BiblatexOnce}{false} 
+		\RequirePackage{babel}
+		\RequirePackage{csquotes}
+		\RequirePackage{biblatex}
+	\fi
 }
 
 % Turn off memoir automatic reset of float counters
@@ -294,13 +298,13 @@
 % This trick is needed to defer the expansion of the cref macro until the
 % typesetting point, because the macro is undefined at this point of the
 % preamble
+\newcommand\@Cref@name[1]{\noexpand\noexpand\noexpand\csuse{Cref@#1@name}}
 \newcommand\@cref@name[1]{\noexpand\noexpand\noexpand\csuse{cref@#1@name}}
 
 \declaretheorem[
   name=\@cref@name{theorem},
   parent=chapter,
 ]{theorem}
-
 
 \declaretheorem[
   name=\@cref@name{corollary},
@@ -316,6 +320,7 @@
   name=\@cref@name{lemma},
   sibling=theorem
 ]{lemma}
+
 
 %\crefname{conjecture}{\GetTranslation{conjecture}}{\GetTranslation{conjectures}}
 \Crefname{conjecture}{\MakeCapital{\GetTranslation{conjecture}}}{\MakeCapital{\GetTranslation{conjectures}}}
@@ -341,12 +346,13 @@
   name=\@cref@name{remark},
   parent=chapter,
   style=remark,
-  qed=$\triangleleft$
+	qed=$\triangleleft$
 ]{remark}
 
 \declaretheorem[
   name=\@cref@name{example},
-  sibling=remark
+  sibling=remark,
+	qed=$\triangleleft$
 ]{example}
 
 % Continuous numbering of floats and equations
@@ -357,9 +363,7 @@
     \counterwithout{listing}{chapter}
     \counterwithout{equation}{chapter}
     \counterwithout{theorem}{chapter}
-%    \counterwithout{lemma}{chapter}
     \counterwithout{definition}{chapter}
-%    \counterwithout{corollary}{chapter}
   }{}
 }
 
@@ -372,18 +376,27 @@
 
 % Styling of theorem-like environments
 \declaretheoremstyle[%
-  headfont=\normalfont\bfseries\scshape,
+	spaceabove = 4pt,
+  spacebelow = 4pt,
+	postheadspace = .5em,
+  headfont=\normalfont\scshape,
   notefont=\normalfont, notebraces={(}{)},
   bodyfont=\normalfont\itshape
 ]{plain}
 
 \declaretheoremstyle[
-  headfont=\normalfont\bfseries\scshape,
+	spaceabove = 4pt,
+  spacebelow = 4pt,
+	postheadspace = .5em,
+  headfont=\normalfont\scshape,
   notefont=\normalfont, notebraces={(}{)},
   bodyfont=\normalfont\itshape
 ]{definition}
 
 \declaretheoremstyle[
+	spaceabove = 4pt,
+  spacebelow = 4pt,
+	postheadspace = .5em,
   headfont=\normalfont\itshape,
   notefont=\normalfont, notebraces={(}{)},
   bodyfont=\normalfont,
@@ -391,10 +404,10 @@
 ]{remark}
 
 
+
 %
 % Title page
 %
-
 \renewcommand\maketitle{%
   \newlength\@borders
   \setlength\@borders{2cm}
