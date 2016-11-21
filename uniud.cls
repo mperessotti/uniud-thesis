@@ -111,6 +111,7 @@
 }{}
 
 \setlength\parskip{0pt}
+\setlength\columnsep{10pt}
 
 %
 % Fonts
@@ -298,7 +299,7 @@
 % This trick is needed to defer the expansion of the cref macro until the
 % typesetting point, because the macro is undefined at this point of the
 % preamble
-\newcommand\@Cref@name[1]{\noexpand\noexpand\noexpand\csuse{Cref@#1@name}}
+%\newcommand\@Cref@name[1]{\noexpand\noexpand\noexpand\csuse{Cref@#1@name}}
 \newcommand\@cref@name[1]{\noexpand\noexpand\noexpand\csuse{cref@#1@name}}
 
 \declaretheorem[
@@ -323,7 +324,7 @@
 
 
 %\crefname{conjecture}{\GetTranslation{conjecture}}{\GetTranslation{conjectures}}
-\Crefname{conjecture}{\MakeCapital{\GetTranslation{conjecture}}}{\MakeCapital{\GetTranslation{conjectures}}}
+\crefname{conjecture}{\MakeCapital{\GetTranslation{conjecture}}}{\MakeCapital{\GetTranslation{conjectures}}}
 \declaretheorem[
   name=\@cref@name{conjecture},
   sibling=theorem
@@ -336,7 +337,7 @@
 ]{definition}
 
 %\crefname{assumption}{\GetTranslation{assumption}}{\GetTranslation{assumptions}}
-\Crefname{assumption}{\MakeCapital{\GetTranslation{assumption}}}{\MakeCapital{\GetTranslation{assumptions}}}
+\crefname{assumption}{\MakeCapital{\GetTranslation{assumption}}}{\MakeCapital{\GetTranslation{assumptions}}}
 \declaretheorem[
   name=\@cref@name{assumption},
   sibling=definition
@@ -376,34 +377,34 @@
 
 % Styling of theorem-like environments
 \declaretheoremstyle[%
-	spaceabove = 4pt,
-  spacebelow = 4pt,
+	spaceabove = .5em,
+	spacebelow = .5em,
 	postheadspace = .5em,
-  headfont=\normalfont\scshape,
-  notefont=\normalfont, notebraces={(}{)},
-  bodyfont=\normalfont\itshape
+	headfont=\normalfont\scshape,
+	notefont=\normalfont, notebraces={(}{)},
+	bodyfont=\normalfont\itshape,
+	headformat={\MakeTextLowercase{\NAME{}} \NUMBER \NOTE}
 ]{plain}
 
 \declaretheoremstyle[
-	spaceabove = 4pt,
-  spacebelow = 4pt,
+	spaceabove = .5em,
+	spacebelow = .5em,
 	postheadspace = .5em,
-  headfont=\normalfont\scshape,
-  notefont=\normalfont, notebraces={(}{)},
-  bodyfont=\normalfont\itshape
+	headfont=\normalfont\scshape,
+	notefont=\normalfont, notebraces={(}{)},
+	bodyfont=\normalfont\itshape,
+	headformat={\MakeTextLowercase{\NAME{}} \NUMBER \NOTE}
 ]{definition}
 
 \declaretheoremstyle[
-	spaceabove = 4pt,
-  spacebelow = 4pt,
+	spaceabove = .5em,
+	spacebelow = .5em,
 	postheadspace = .5em,
-  headfont=\normalfont\itshape,
-  notefont=\normalfont, notebraces={(}{)},
-  bodyfont=\normalfont,
-  headformat={\NAME{} \NUMBER \NOTE}
+	headfont=\normalfont\scshape,
+	notefont=\normalfont, notebraces={(}{)},
+	bodyfont=\normalfont,
+	headformat={\MakeTextLowercase{\NAME{}} \NUMBER \NOTE}
 ]{remark}
-
-
 
 %
 % Title page
@@ -427,21 +428,21 @@
 	      \uniudname{uniud}\par\vskip-4pt%
 	      \uniudname{department} \thedepartment\par%
 	      \if@phd%
-			    \uniudname{phd}%
+			    \uniudname{phd}
 			  \else%
 					\if@master%
-					  \uniudname{master}%
+					  \uniudname{master}
 					\else%
-					  \uniudname{bachelor}%
+					  \uniudname{bachelor}
 					\fi%
 		  	\fi%
-      	\thecourse%
+      	\thecourse\par
       \endgroup%
       \vfill%
       \begingroup%
-        \scshape\raggedright
-        \fontsize{36pt}{36pt}\selectfont%
-        \thetitle
+        \scshape\raggedright%
+        \fontsize{36pt}{30pt}\selectfont%
+				\thetitle\par
       \endgroup%
       \vfill%
       \begingroup%

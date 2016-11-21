@@ -17,12 +17,17 @@
 % depth 3: subsubsections but not subsubsubsections
 \setcounter{secnumdepth}{3}
 
-% table of contents
+% table of contents (TOC)
 % depth 2: sections and subsections
 \setcounter{tocdepth}{2}
 
-% do not highlight hyperlinks such as citations
-\hypersetup{hidelinks}
+
+\hypersetup{
+	% do not highlight hyperlinks such as citations
+	hidelinks,
+	% link on both page and title in TOC
+	linktoc=all
+}
 
 \usepackage{lipsum,blindtext} % generates demo text
 
@@ -58,6 +63,8 @@
 	giveninits=true,
 	% sort references by author names, year and then title
 	sorting=nyt,
+	% limits the number of displayed authors in the bibliography (default is 3)
+	maxbibnames=99,
 	% do not print urls or doi and isbn identifiers
 	doi=false, 
 	isbn=false,
@@ -77,7 +84,7 @@
 %-------------------------------------------------------------------------------
 %	TITLE PAGE
 %-------------------------------------------------------------------------------
-
+\def\titlenewline{\texorpdfstring{\\}{}}
 \uniudset{
 	department={\uniudname{dima}}, %default
 	course={\uniudname{dima/informatica}}, % default
@@ -92,8 +99,8 @@
 		Italia
 	},
 	candidate use gender=feminine,
-	academic year={2015/16},
-	title={New Types of\\[4pt]Irreducibility Criteria},
+	academic year={1933/34},
+	title={New Types of Irreducibility Criteria},
 	supervisor={{\O}ystein Ore},
 }
 
