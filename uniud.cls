@@ -54,15 +54,15 @@
     course/.get=\thecourse,
     course/.store in=\thecourse,
 %
-	candidate name/.value required,
-	candidate name/.store in=\thecandidatename,
-  	candidate email/.value required,
-	candidate email/.store in=\thecandidateemail,
-	candidate address/.get=\thecandidateaddress,
-	candidate address/.store in=\thecandidateaddress,
+		candidate name/.value required,
+		candidate name/.store in=\thecandidatename,
+	  candidate email/.value required,
+		candidate email/.store in=\thecandidateemail,
+		candidate address/.get=\thecandidateaddress,
+		candidate address/.store in=\thecandidateaddress,
 %
-	candidate use gender/.is choice,
-	candidate use gender/feminine/.code=\booltrue{@candidategenderf},
+		candidate use gender/.is choice,
+		candidate use gender/feminine/.code=\booltrue{@candidategenderf},
     candidate use gender/masculine/.code=\boolfalse{@candidategenderf},
 %
     supervisor/.store in=\thesupervisor,
@@ -76,6 +76,8 @@
     academic year/.store in=\theacademicyear,
     academic year/.value required,
     year/.forward to=/uniud/academic year,
+%
+		dedication/.store in=\thededication,
 %
     showframes/.is if=@showframes,
     showframes/.initial=false,
@@ -121,6 +123,11 @@
 \RequirePackage[scaled=0.86]{berasans}    % Bera Sans sans-serif font
 \RequirePackage[scaled=1.03]{inconsolata} % Inconsolata monospace font
 
+\linespread{1.05}
+\RequirePackage[
+	tracking=smallcaps,
+	letterspace=20
+]{microtype}
 
 %
 % Math
@@ -426,7 +433,7 @@
 	      \scshape\raggedright\Large%
 	      \setlength\parskip{1ex}%
 	      \uniudname{uniud}\par\vskip-4pt%
-	      \uniudname{department} \thedepartment\par%
+	      \uniudname{department} \thedepartment\par\vskip-4pt%
 	      \if@phd%
 			    \uniudname{phd}
 			  \else%
@@ -492,4 +499,10 @@
       \endgroup%
     \end{adjustwidth*}
   \end{titlingpage}
+	% dedication page
+	\if\pgfkeysifdefined{/uniud/dedication}%
+		\clearpage
+		\par\vspace*{.35\textheight}{\centering\small\thededication\par}
+		\thispagestyle{empty}
+	\fi
 }
