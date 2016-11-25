@@ -12,3 +12,8 @@
 *.spl
 *.fls
 *.fdb_latexmk
+*.run.xml
+*-blx.bib
+!*.bib
+*.bbl
+.atomignore
