@@ -6,9 +6,10 @@
 %
 % This file is in the public domain
 %
-%
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{uniud}[2015/04/23 v0.1 University of Udine Thesis LaTeX Class]
+\ProvidesClass{uniud}[%
+2015/04/23 v0.1 University of Udine Thesis LaTeX Class%
+]
 
 %
 % Basic LaTeX programming support
@@ -47,37 +48,31 @@
     phd/.style={degree=phd},
 %
     department/.initial=\uniudname{dima},
-    department/.get=\thedepartment,
-    department/.store in=\thedepartment,
 %
     course/.initial=\uniudname{dima/informatica},
-    course/.get=\thecourse,
-    course/.store in=\thecourse,
 %
+		candidate name/.initial,
 		candidate name/.value required,
-		candidate name/.store in=\thecandidatename,
-	  candidate email/.value required,
-		candidate email/.store in=\thecandidateemail,
-		candidate address/.get=\thecandidateaddress,
-		candidate address/.store in=\thecandidateaddress,
+		candidate email/.initial,
+		candidate address/.initial,
 %
 		candidate use gender/.is choice,
 		candidate use gender/feminine/.code=\booltrue{@candidategenderf},
     candidate use gender/masculine/.code=\boolfalse{@candidategenderf},
 %
-    supervisor/.store in=\thesupervisor,
+    supervisor/.initial,
     supervisor/.value required,
 %
-    cosupervisor/.store in=\thecosupervisor,
+    cosupervisor/.initial,
 %
-    title/.store in=\thetitle,
+    title/.initial,
     title/.value required,
 %
-    academic year/.store in=\theacademicyear,
+    academic year/.initial,
     academic year/.value required,
     year/.forward to=/uniud/academic year,
 %
-		dedication/.store in=\thededication,
+		dedication/.initial,
 %
     showframes/.is if=@showframes,
     showframes/.initial=false,
@@ -433,7 +428,7 @@
 	      \scshape\raggedright\Large%
 	      \setlength\parskip{1ex}%
 	      \uniudname{uniud}\par\vskip-4pt%
-	      \uniudname{department} \thedepartment\par\vskip-4pt%
+	      \uniudname{department} \pgfkeysvalueof{/uniud/department}\par\vskip-4pt%
 	      \if@phd%
 			    \uniudname{phd}
 			  \else%
@@ -443,13 +438,13 @@
 					  \uniudname{bachelor}
 					\fi%
 		  	\fi%
-      	\thecourse\par
+      	\pgfkeysvalueof{/uniud/course}\par
       \endgroup%
       \vfill%
       \begingroup%
         \scshape\raggedright%
         \fontsize{36pt}{30pt}\selectfont%
-				\thetitle\par
+				\pgfkeysvalueof{/uniud/title}\par
       \endgroup%
       \vfill%
       \begingroup%
@@ -462,27 +457,27 @@
         \fi%
         \par\vskip-2pt%
         \Large%
-        \thecandidatename%
+        \pgfkeysvalueof{/uniud/candidate name}%
         \par\vskip4pt%
         \normalsize%
         \uniudname{supervisor}:%
         \par\vskip-2pt%
         \Large%
-        \thesupervisor%
+        \pgfkeysvalueof{/uniud/supervisor}%
         \par\vskip4pt%
-        \if\pgfkeysifdefined{/uniud/cosupervisor}%
+				\if\pgfkeysvalueof{/uniud/cosupervisor}\empty\else%
           \normalsize%
           \uniudname{cosupervisor}:%
           \par\vskip-2pt%
           \Large%
-          \thecosupervisor%
+          \pgfkeysvalueof{/uniud/cosupervisor}%
           \par\vskip4pt%
         \fi%
         \normalsize%
         \uniudname{academicyear}:%
         \par\vskip-2pt%
         \Large%
-        \theacademicyear%
+        \pgfkeysvalueof{/uniud/academic year}%
       \endgroup%
     \end{adjustwidth*}
   \end{titlingpage}
@@ -491,18 +486,22 @@
     \calccentering{\unitlength}
     \begin{adjustwidth*}{\unitlength-\@borders}{-\unitlength-\@borders}%
       \begingroup%
-        \raggedright%
+				\raggedright%
 				\normalsize%
-        \thecandidateemail%
-        \par\vskip4pt%
-        \thecandidateaddress%
+				\if\pgfkeysvalueof{/uniud/candidate email}\empty\else%
+	        \pgfkeysvalueof{/uniud/candidate email}%
+	        \par\vskip4pt%
+				\fi%
+				\if\pgfkeysvalueof{/uniud/candidate address}\empty\else%
+        	\pgfkeysvalueof{/uniud/candidate address}%
+				\fi%
       \endgroup%
     \end{adjustwidth*}
   \end{titlingpage}
 	% dedication page
-	\if\pgfkeysifdefined{/uniud/dedication}%
+	\if\pgfkeysvalueof{/uniud/dedication}\empty\else%
 		\clearpage
-		\par\vspace*{.35\textheight}{\centering\small\thededication\par}
+		\par\vspace*{.35\textheight}{\centering\small\pgfkeysvalueof{/uniud/dedication}\par}
 		\thispagestyle{empty}
 	\fi
 }

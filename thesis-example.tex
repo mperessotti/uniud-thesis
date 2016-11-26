@@ -77,30 +77,32 @@
 %-------------------------------------------------------------------------------
 %	TITLE PAGE
 %-------------------------------------------------------------------------------
-\def\titlenewline{\texorpdfstring{\\}{}}
 \uniudset{
 	department={\uniudname{dima}}, %default
 	course={\uniudname{dima/informatica}}, % default
+	% mandatory
 	degree=phd,
 	candidate name={Grace ``Amazing'' Hopper},
+	academic year={1933/34},
+	title={New Types of Irreducibility Criteria},
+	supervisor={{\O}ystein Ore},
+	% optional
 	candidate email={hopper.grace@spes.uniud.it},
 	candidate address={
 		Dipartimento di Matematica, Informatica e Fisica\\
-		Universit\`a degli Studi di Udine\\
+		Università degli Studi di Udine\\
 		Via delle Scienze, 206\\
 		33100 Udine\\
 		Italia
 	},
 	candidate use gender=feminine,
-	academic year={1933/34},
-	title={New Types of Irreducibility Criteria},
-	supervisor={{\O}ystein Ore},
+	%cosupervisor={Supervisor},
 	dedication={Dedication}
 }
 
 \hypersetup{
-  pdftitle={\thetitle},
-  pdfauthor={\thecandidatename},
+  pdftitle={\pgfkeysvalueof{/uniud/title}},
+  pdfauthor={\pgfkeysvalueof{/uniud/candidate name}},
 }
 
 \begin{document}
