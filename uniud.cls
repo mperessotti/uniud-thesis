@@ -252,16 +252,6 @@
 \DeclareTranslationFallback {listings}{Listings}
 \DeclareTranslation{Italian}{listings}{Listati}
 
-\DeclareTranslationFallback{assumption}{assumption}
-\DeclareTranslation{italian}{assumption}{assunzione}
-\DeclareTranslationFallback{assumptions}{assumptions}
-\DeclareTranslation{italian}{assumptions}{assunzioni}
-
-\DeclareTranslationFallback{conjecture}{conjecture}
-\DeclareTranslation{italian}{conjecture}{congettura}
-\DeclareTranslationFallback{conjectures}{conjectures}
-\DeclareTranslation{italian}{conjectures}{congetture}
-
 %
 % Floats, captions, theorems, cross-references, ecc...
 %
@@ -324,26 +314,11 @@
   sibling=theorem
 ]{lemma}
 
-
-%\crefname{conjecture}{\GetTranslation{conjecture}}{\GetTranslation{conjectures}}
-\crefname{conjecture}{\MakeCapital{\GetTranslation{conjecture}}}{\MakeCapital{\GetTranslation{conjectures}}}
-\declaretheorem[
-  name=\@cref@name{conjecture},
-  sibling=theorem
-]{conjecture}
-
 \declaretheorem[
   name=\@cref@name{definition},
   parent=chapter,
   style=definition
 ]{definition}
-
-%\crefname{assumption}{\GetTranslation{assumption}}{\GetTranslation{assumptions}}
-\crefname{assumption}{\MakeCapital{\GetTranslation{assumption}}}{\MakeCapital{\GetTranslation{assumptions}}}
-\declaretheorem[
-  name=\@cref@name{assumption},
-  sibling=definition
-]{assumption}
 
 \declaretheorem[
   name=\@cref@name{remark},
