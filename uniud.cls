@@ -72,6 +72,8 @@
     academic year/.value required,
     year/.forward to=/uniud/academic year,
 %
+		inside cover note/.initial,
+%
 		dedication/.initial,
 %
     showframes/.is if=@showframes,
@@ -118,7 +120,8 @@
 \RequirePackage[scaled=0.86]{berasans}    % Bera Sans sans-serif font
 \RequirePackage[scaled=1.03]{inconsolata} % Inconsolata monospace font
 
-\linespread{1.05}
+\linespread{1.1}
+
 \RequirePackage[
 	tracking=smallcaps,
 	letterspace=20
@@ -275,6 +278,13 @@
 	\fi
 }
 
+% Style of description labels
+\renewcommand{\descriptionlabel}[1]{ %
+	\hspace{\labelsep}%
+	{\emph{#1}.}%
+%	{\normalfont\scshape\MakeTextLowercase{#1}}%
+}
+
 % Turn off memoir automatic reset of float counters
 \renewcommand\@memfront@floats{}
 \renewcommand\@memmain@floats{}
@@ -383,29 +393,34 @@
 	headformat={\MakeTextLowercase{\NAME{}} \NUMBER \NOTE}
 ]{remark}
 
+% redefine ams proof environment to match the style used for theorems etc.
+
+\renewenvironment{proof}[1][\proofname] {\par\pushQED{\qed}\normalfont\topsep6\p@\@plus6\p@\relax\trivlist\item[\hskip\labelsep\normalfont\scshape\MakeTextLowercase{#1}\@addpunct{.}]\ignorespaces}{\popQED\endtrivlist\@endpefalse}
+
 %
 % Title page
 %
 \renewcommand\maketitle{%
   \newlength\@borders
   \setlength\@borders{2cm}
-	\let\cleardoublepage\clearpage
-	% cover page
+  \let\oldcleardoublepage\cleardoublepage
+  \let\cleardoublepage\clearpage
+  % cover page
   \begin{titlingpage}
     \calccentering{\unitlength}
     \begin{adjustwidth*}{\unitlength-\@borders}{-\unitlength-\@borders}%
 	    \begingroup%
         \makebox[0pt][l]{%
           \raisebox{-1.05\textheight}[0pt][0pt]{%
-            \includegraphics[height=1.1\textheight]{graphics/mezzo-pollo-pallido.pdf}}}\hskip-0pt
+            \includegraphics[draft=false,height=1.1\textheight]{graphics/mezzo-pollo-pallido.pdf}}}\hskip-0pt
       \endgroup%
       \begingroup%
-	      \scshape\raggedright\Large%
+        \scshape\raggedright\Large%
 	      \setlength\parskip{1ex}%
 	      \uniudname{uniud}\par\vskip-4pt%
 	      \uniudname{department} \pgfkeysvalueof{/uniud/department}\par\vskip-4pt%
 	      \if@phd%
-			    \uniudname{phd}
+          \uniudname{phd}
 			  \else%
 					\if@master%
 					  \uniudname{master}
@@ -463,12 +478,18 @@
       \begingroup%
 				\raggedright%
 				\normalsize%
-				\if\pgfkeysvalueof{/uniud/candidate email}\empty\else%
+ 				\if\pgfkeysvalueof{/uniud/candidate email}\empty\else%
 	        \pgfkeysvalueof{/uniud/candidate email}%
 	        \par\vskip4pt%
 				\fi%
 				\if\pgfkeysvalueof{/uniud/candidate address}\empty\else%
-        	\pgfkeysvalueof{/uniud/candidate address}%
+          \pgfkeysvalueof{/uniud/candidate address}%
+	        \par\vskip4pt%
+				\fi%
+        \if\pgfkeysvalueof{/uniud/inside cover note}\empty\else%
+          \vskip4pt%
+          \pgfkeysvalueof{/uniud/inside cover note}%
+	        \par\vskip4pt%
 				\fi%
       \endgroup%
     \end{adjustwidth*}
@@ -479,4 +500,6 @@
 		\par\vspace*{.35\textheight}{\centering\small\pgfkeysvalueof{/uniud/dedication}\par}
 		\thispagestyle{empty}
 	\fi
+  % restore \cleardoublepage expected behaviour
+  \let\cleardoublepage\oldcleardoublepage
 }

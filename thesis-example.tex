@@ -25,14 +25,6 @@
 \usepackage{lipsum,blindtext} % generates demo text
 
 %-------------------------------------------------------------------------------
-%	LISTS, ENUMS etc.
-%-------------------------------------------------------------------------------
-
-\usepackage{paralist}
-\setlength{\pltopsep}{.1ex}
-\setlength{\plitemsep}{.1ex}
-
-%-------------------------------------------------------------------------------
 %	FOREIGN
 %-------------------------------------------------------------------------------
 \usepackage{babel}
@@ -96,8 +88,9 @@
 		Italia
 	},
 	candidate use gender=feminine,
-	%cosupervisor={Supervisor},
-	dedication={Dedication}
+	%cosupervisor={CoSupervisor},
+	dedication={Dedication},
+	inside cover note={\today},
 }
 
 \hypersetup{
@@ -160,22 +153,29 @@
 
 \section{Lists}
 
-\blindtext[1]
-Itemize:
-\blindlist{itemize}[3]
 
-\blindtext[1]
-Compactitem:
-\blindlist{compactitem}[3]
+Itemize
+\begin{itemize}
+\item First item text
+\item Second item text
+\item Third item text
+\end{itemize}
+Enumerate
+\begin{enumerate}
+\item First item text
+\item Second item text
+\item Third item text
+\end{enumerate}
+Description
+\begin{description}
+\item[First] 
+	Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Etiam lobortis facilisis sem. Nullam nec mi et neque pharetra sollicitudin. Praesent imperdiet mi nec ante.
+\item[Second] 
+	 Donec ullamcorper, felis non sodales commodo, lectus velit ultrices augue, a dignissim nibh lectus placerat pede.
+\item[Third] 
+	Vivamus nunc nunc, molestie ut, ultricies vel, semper in, velit. Ut porttitor. Praesent in sapien.
+\end{description}
 
-\blindtext[1]
-Enumerate:
-\blindlist{enumerate}[3]
-
-\blindtext[1]
-Compactenum:
-\blindlist{compactenum}[3]
-\blindtext[1]
 
 \section{Math}
 
