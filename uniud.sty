@@ -43,12 +43,21 @@
   \DeclareTranslation{english}{#1}{#2}
 }
 
-\DeclareDocumentCommand\uniudname{o m}{%
-  \IfNoValueTF{#1}{%
-    \GetTranslation{#2}%
-  }{%
-    \GetTranslationFor{#1}{#2}%
-  }%
+\DeclareDocumentCommand\uniudname{s o m}{%
+	% starred version force lowercase
+	\IfValueTF{#1}{%
+	  \IfNoValueTF{#2}{%
+	    \GetLCTranslation{#3}%
+	  }{%
+	    \GetLCTranslationFor{#2}{#3}%
+	  }%
+	}{%
+	  \IfNoValueTF{#2}{%
+	    \GetTranslation{#3}%
+	  }{%
+	    \GetTranslationFor{#2}{#3}%
+	  }%
+	}%
 }
 
 %

@@ -11,9 +11,7 @@
 2015/04/23 v0.1 University of Udine Thesis LaTeX Class%
 ]
 
-%
 % Basic LaTeX programming support
-%
 \RequirePackage{etoolbox}
 \RequirePackage{xparse}
 \RequirePackage{calc}
@@ -21,10 +19,7 @@
 % Keyval options handling
 \RequirePackage{pgfopts}
 
-%
 % Boolean parameters to keep track of class options
-%
-
 \newbool{@bachelor}
 \newbool{@master}
 \newbool{@phd}
@@ -90,19 +85,13 @@
 % Process class options
 \ProcessPgfOptions{/uniud}
 
-%
 % We are based on memoir, so let's load it
-%
 \LoadClass[a4paper,11pt]{memoir}
 
-%
 % uniud utility package
-%
 \RequirePackage{uniud}
 
-%
 % Page Layout
-%
 \checkandfixthelayout
 
 \ifbool{@showframes}{%
@@ -110,30 +99,26 @@
 }{}
 
 \setlength\parskip{0pt}
-\setlength\columnsep{10pt}
+\setlength\columnsep{20pt}
 
 %
 % Fonts
 %
+
 % Charter main font, lining figures in math, osf in text
 \RequirePackage[scaled=.98,sups,osf]{XCharter}
-\RequirePackage[scaled=0.86]{berasans}    % Bera Sans sans-serif font
-\RequirePackage[scaled=1.03]{inconsolata} % Inconsolata monospace font
+% Bera Sans sans-serif font
+\RequirePackage[scaled=0.86]{berasans}
+ % Inconsolata monospace font
+\RequirePackage[scaled=1.03]{inconsolata}
 
 \linespread{1.1}
 
 \RequirePackage[
-	tracking=smallcaps,
+	% adjust spacing for smallcaps
+	tracking=smallcaps, 
 	letterspace=20
 ]{microtype}
-
-%
-% Math
-%
-\RequirePackage{amsmath,amssymb}
-\RequirePackage{mathtools}
-
-%\mathtoolsset{showonlyrefs,showmanualtags}
 
 %
 % Customization of \marginpar. Put here because it is needed for paragraph
@@ -230,6 +215,7 @@
 %
 % Page headers
 %
+
 % Remove footer from the chapter and title pagestyle
 \copypagestyle{chapter}{empty}
 \copypagestyle{titlingpage}{empty}
@@ -248,51 +234,44 @@
 \pagestyle{uniud}
 
 %
-% Translatable strings
+% Floats
 %
-\DeclareTranslationFallback {listing} {Listing}
-\DeclareTranslation{Italian}{listing} {Listato}
-\DeclareTranslationFallback {listings}{Listings}
-\DeclareTranslation{Italian}{listings}{Listati}
-
-%
-% Floats, captions, theorems, cross-references, ecc...
-%
-\RequirePackage{amsthm}
-\RequirePackage{nameref}
-\RequirePackage{hyperref}
-\RequirePackage[capitalise,noabbrev,nameinlink]{cleveref}
-\RequirePackage{thmtools}
-
-%
-% Ensure biblatex is loaded without messing with loadtime options
-%
-\newbool{@BiblatexOnce}
-\setbool{@BiblatexOnce}{true} 
-\BeforeBeginEnvironment{document}{
-	\if@BiblatexOnce
-		\setbool{@BiblatexOnce}{false} 
-		\RequirePackage{babel}
-		\RequirePackage{csquotes}
-		\RequirePackage{biblatex}
-	\fi
-}
-
-% Style of description labels
-\renewcommand{\descriptionlabel}[1]{ %
-	\hspace{\labelsep}%
-	{\emph{#1}.}%
-%	{\normalfont\scshape\MakeTextLowercase{#1}}%
-}
 
 % Turn off memoir automatic reset of float counters
 \renewcommand\@memfront@floats{}
 \renewcommand\@memmain@floats{}
 \renewcommand\@memback@floats{}
 
-% 'listing' floating environment
-\newfloat[chapter]{listing}{lol}{\GetTranslation{listing}}
-\crefname{listing}{\GetTranslation{listing}}{\GetTranslation{listings}}
+%
+% Cross-references
+%
+
+\RequirePackage{nameref}
+\RequirePackage{hyperref}
+\RequirePackage[capitalise,noabbrev,nameinlink]{cleveref}
+
+%
+% Lists, enums, etc.
+%
+
+% Style of description labels
+\renewcommand{\descriptionlabel}[1]{ %
+	\hspace{\labelsep}%
+	{\emph{#1}.}%
+}
+
+%
+% Math
+%
+\RequirePackage{amsmath,amssymb}
+\RequirePackage{mathtools}
+
+%
+%	theorems etc.
+%
+
+\RequirePackage{amsthm}
+\RequirePackage{thmtools}
 
 % Theorem-like environments
 %  translations of these three particular names are already
@@ -397,14 +376,18 @@
 
 \renewenvironment{proof}[1][\proofname] {\par\pushQED{\qed}\normalfont\topsep6\p@\@plus6\p@\relax\trivlist\item[\hskip\labelsep\normalfont\scshape\MakeTextLowercase{#1}\@addpunct{.}]\ignorespaces}{\popQED\endtrivlist\@endpefalse}
 
-%
-% Title page
-%
+%-------------------------------------------------------------------------------
+%	COVER
+%-------------------------------------------------------------------------------
+
 \renewcommand\maketitle{%
   \newlength\@borders
   \setlength\@borders{2cm}
   \let\oldcleardoublepage\cleardoublepage
   \let\cleardoublepage\clearpage
+	\def\scLarge{\fontsize{15pt}{14.4pt}\selectfont}
+	\def\scnormal{\fontsize{12.0pt}{11pt}\selectfont}
+	\def\blockskip{\vskip4pt}
   % cover page
   \begin{titlingpage}
     \calccentering{\unitlength}
@@ -415,59 +398,55 @@
             \includegraphics[draft=false,height=1.1\textheight]{graphics/mezzo-pollo-pallido.pdf}}}\hskip-0pt
       \endgroup%
       \begingroup%
-        \scshape\raggedright\Large%
-	      \setlength\parskip{1ex}%
-	      \uniudname{uniud}\par\vskip-4pt%
-	      \uniudname{department} \pgfkeysvalueof{/uniud/department}\par\vskip-4pt%
+        \raggedright\scshape%
+				\scLarge%
+	      \uniudname*{uniud}\par%
+	      \uniudname*{department} \pgfkeysvalueof{/uniud/department}\par%
 	      \if@phd%
-          \uniudname{phd}
+          \uniudname*{phd}
 			  \else%
 					\if@master%
-					  \uniudname{master}
+					  \uniudname*{master}
 					\else%
-					  \uniudname{bachelor}
+					  \uniudname*{bachelor}
 					\fi%
 		  	\fi%
-      	\pgfkeysvalueof{/uniud/course}\par
+      	\MakeTextLowercase{\pgfkeysvalueof{/uniud/course}}\par
       \endgroup%
       \vfill%
       \begingroup%
         \scshape\raggedright%
         \fontsize{36pt}{30pt}\selectfont%
-				\pgfkeysvalueof{/uniud/title}\par
+				\MakeTextLowercase{\pgfkeysvalueof{/uniud/title}}\par
       \endgroup%
       \vfill%
       \begingroup%
-        \scshape\raggedright%
-				\normalsize%
+	      \scshape\raggedright%
+				\scnormal%
         \if@candidategenderf%
-			    \uniudname{candidate (f)}:%
+			    \uniudname*{candidate (f)}:%
 			  \else%
-	    		\uniudname{candidate (m)}:%
+	    		\uniudname*{candidate (m)}:%
         \fi%
-        \par\vskip-2pt%
-        \Large%
-        \pgfkeysvalueof{/uniud/candidate name}%
-        \par\vskip4pt%
-        \normalsize%
-        \uniudname{supervisor}:%
-        \par\vskip-2pt%
-        \Large%
-        \pgfkeysvalueof{/uniud/supervisor}%
-        \par\vskip4pt%
+				\scLarge\par%
+				\MakeTextLowercase{\pgfkeysvalueof{/uniud/candidate name}}%
+				\blockskip%
+				\scnormal\par%
+        \uniudname*{supervisor}:%
+				\scLarge\par%
+        \MakeTextLowercase{\pgfkeysvalueof{/uniud/supervisor}}%
 				\if\pgfkeysvalueof{/uniud/cosupervisor}\empty\else%
-          \normalsize%
-          \uniudname{cosupervisor}:%
-          \par\vskip-2pt%
-          \Large%
-          \pgfkeysvalueof{/uniud/cosupervisor}%
-          \par\vskip4pt%
+					\blockskip%
+					\scnormal\par%
+          \uniudname*{cosupervisor}:%
+	        \scLarge\par%
+          \MakeTextLowercase{\pgfkeysvalueof{/uniud/cosupervisor}}%
         \fi%
-        \normalsize%
-        \uniudname{academicyear}:%
-        \par\vskip-2pt%
-        \Large%
-        \pgfkeysvalueof{/uniud/academic year}%
+				\blockskip%
+				\scnormal\par%
+        \uniudname*{academicyear}:%
+        \scLarge\par%
+        \MakeTextLowercase{\pgfkeysvalueof{/uniud/academic year}}%
       \endgroup%
     \end{adjustwidth*}
   \end{titlingpage}
@@ -503,3 +482,46 @@
   % restore \cleardoublepage expected behaviour
   \let\cleardoublepage\oldcleardoublepage
 }
+
+%-------------------------------------------------------------------------------
+%	SUPPORT FOR OPTIONAL PACKAGES
+%-------------------------------------------------------------------------------
+
+%
+% BIBLATEX
+%
+\AtEndPreamble{
+	\@ifpackageloaded{biblatex}{
+	
+		\RequirePackage{csquotes}
+			
+		\defbibheading{bibliography}{%
+			\chapter*{#1}%
+			\addcontentsline{toc}{chapter}{#1}
+			\markboth{#1}{#1}
+		}
+	}{}
+}
+
+%
+% LISTINGS
+%
+\AtEndPreamble{
+\@ifpackageloaded{listings}{
+
+% translations
+\DeclareTranslationFallback {listing}{Listing}
+\DeclareTranslation{Italian}{listing}{Listato}
+\DeclareTranslationFallback {listings}{Listings}
+\DeclareTranslation{Italian}{listings}{Listati}
+
+% 'listing' floating environment
+\newfloat[chapter]{listing}{lol}{\GetTranslation{listing}}
+\crefname{listing}{\GetTranslation{listing}}{\GetTranslation{listings}}
+
+% Continuous numbering
+\notbool{@countersbychapter}{
+  \counterwithout{listing}{chapter}
+}{}
+
+}{}}
