@@ -584,7 +584,7 @@
 						\centering\scshape\scnormal%
 						\edef\@supervisors{\pgfkeysvalueof{/uniud/cosupervisors}}%
 						\StrCount{\@supervisors}{,}[\@numcosupervisors]
-						\ifnum\@numcosupervisors>1\relax
+						\ifnum\@numcosupervisors>0\relax
 					  	\uniudname*{cosupervisors}%
 						\else%
 							\uniudname*{cosupervisor}%
