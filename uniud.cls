@@ -136,6 +136,8 @@
 }{}
 
 \setlength\parskip{0pt}
+
+% Two columns layout
 \setlength\columnsep{20pt}
 
 %
@@ -158,8 +160,8 @@
 ]{microtype}
 
 %
-% Customization of \marginpar. Put here because it is needed for paragraph
-% head style
+% Customization of \marginpar. 
+% Put here because it is needed for paragraph head style
 %
 \let\@oldmarginpar\marginpar
 \RenewDocumentCommand{\marginpar}{o m}{%
@@ -169,22 +171,13 @@
 }
 
 %
-% TOC
+% head style
 %
-\renewcommand{\cftpartfont}{\normalfont}
-\renewcommand{\cftpartpagefont}{\normalfont} 
-\renewcommand{\cftchapterfont}{\normalfont}  
-\renewcommand{\cftchapterpagefont}{\normalfont} 
 
-%
-% Head styles
-%
+% 'uniud' chapter style
 
 % Common hanging space for all heading numbering
 \newcommand\@lefthang[1]{\makebox[0pt][r]{#1\hspace{\marginparsep}}}
-
-\newlength{\chaptitleheight}
-\newlength{\chapnumheight}
 
 \makechapterstyle{uniud}{%
   %\setlength\beforechapskip{0pt}
@@ -192,39 +185,43 @@
   \setlength\afterchapskip{50pt}
   
   \renewcommand\chapterheadstart\relax
+	
+	% some aux lengths
+	\newlength{\@chaptitleheight}
+	\newlength{\@chapnumheight}
 
   % Fonts and size
-  \renewcommand\chaptitlefont{%
+  \renewcommand{\chaptitlefont}{%
     \normalfont\fontsize{28pt}{26pt}\selectfont\scshape\raggedright%
   }
-  \renewcommand\chapnumfont{%
+  \renewcommand{\chapnumfont}{%
     \normalfont\fontsize{80pt}{80pt}\selectfont\scshape%
   }
 
   % do not print 'chapter'
-  \renewcommand\printchaptername{}
+  \renewcommand{\printchaptername}{}
     
   % Small-caps title (always lowercase)
-  \renewcommand\printchaptertitle[1]{%
+  \renewcommand{\printchaptertitle}[1]{%
   	\chaptitlefont\MakeTextLowercase{##1}%
     % record the actual height
-	\settototalheight{\chaptitleheight}{\vbox{\chaptitlefont\MakeTextLowercase{##1}}}%
+		\settototalheight{\@chaptitleheight}{\vbox{\chaptitlefont\MakeTextLowercase{##1}}}%
   }
 	
   \renewcommand\afterchapternum{}
 
   \renewcommand\printchapternum{%
-	\raisebox{\dimexpr-\height+12pt}[0pt][\dimexpr-\depth]{%
-	  \makebox[0pt][r]{\chapnumfont\thechapter\hspace{\marginparsep}}%
-	}%
-	% record the actual height
-	\settototalheight{\chapnumheight}{\vbox{\chapnumfont\thechapter}}%
+		\raisebox{\dimexpr-\height+12pt}[0pt][\dimexpr-\depth]{%
+		  \makebox[0pt][r]{\chapnumfont\thechapter\hspace{\marginparsep}}%
+		}%
+		% record the actual height
+		\settototalheight{\@chapnumheight}{\vbox{\chapnumfont\thechapter}}%
   }
   
   \renewcommand\afterchaptertitle{\par\nobreak%
     % when needed skip some space to compensate for short titles
-	\ifdim \chaptitleheight < \chapnumheight
-    \vskip\dimexpr \chapnumheight - \chaptitleheight
+		\ifdim \@chaptitleheight < \@chapnumheight
+	    \vskip\dimexpr \@chapnumheight - \@chaptitleheight
     \fi
     \vskip\afterchapskip%
   }  
@@ -253,6 +250,52 @@
   % Italic paragraphs and subparagraphs
   \setparaheadstyle{\normalfont\itshape}
   \setsubparaheadstyle{\normalfont\itshape}
+	
+	% Book style
+	% disable page numbers and headers
+	\aliaspagestyle{book}{empty}
+	% Fonts and size
+	\renewcommand{\booktitlefont}{%
+		\normalfont\fontsize{28pt}{26pt}\selectfont\scshape%
+	}
+	\renewcommand{\booknamefont}{%
+		\normalfont\fontsize{15pt}{14.4pt}\selectfont\scshape%
+	}
+	\renewcommand{\booknumfont}{%
+		\normalfont\fontsize{80pt}{80pt}\selectfont\scshape%
+	}
+	% print 'book' above book number
+	\renewcommand{\printbookname}{
+		\booknamefont\MakeTextLowercase{\bookname}\par\vspace{-1\onelineskip}%
+	}
+	\renewcommand{\midbookskip}{\par\vspace{1\onelineskip}}
+	% Small-caps title (always lowercase)
+	\renewcommand{\printbooktitle}[1]{%
+		\booktitlefont\MakeTextLowercase{##1}%
+	}
+	
+	% Part style		
+	% disable page numbers and headers
+	\aliaspagestyle{part}{empty}
+	% Fonts and size
+	\renewcommand{\parttitlefont}{%
+		\normalfont\fontsize{28pt}{26pt}\selectfont\scshape%
+	}
+	\renewcommand{\partnamefont}{%
+		\normalfont\fontsize{15pt}{14.4pt}\selectfont\scshape%
+	}
+	\renewcommand{\partnumfont}{%
+		\normalfont\fontsize{80pt}{80pt}\selectfont\scshape%
+	}
+	% print 'part' above number
+	\renewcommand{\printpartname}{
+		\partnamefont\MakeTextLowercase{\partname}\par\vspace{-1\onelineskip}%
+	}
+	\renewcommand{\midpartskip}{\par\vspace{1\onelineskip}}
+	% Small-caps title (always lowercase)
+	\renewcommand{\printparttitle}[1]{%
+		\parttitlefont\MakeTextLowercase{##1}%
+	}
 }
 
 \headstyles{uniud}
@@ -277,6 +320,17 @@
 }
 
 \pagestyle{uniud}
+
+%
+% TOC
+%
+\setcounter{tocdepth}{2}
+\renewcommand{\cftbookfont}{\normalfont}
+\renewcommand{\cftbookpagefont}{\normalfont} 
+\renewcommand{\cftpartfont}{\normalfont}
+\renewcommand{\cftpartpagefont}{\normalfont} 
+\renewcommand{\cftchapterfont}{\normalfont}  
+\renewcommand{\cftchapterpagefont}{\normalfont} 
 
 %
 % Floats

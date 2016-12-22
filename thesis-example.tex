@@ -1,7 +1,7 @@
 %-------------------------------------------------------------------------------
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %-------------------------------------------------------------------------------
-\documentclass[english,counters by chapter]{uniud}
+\documentclass[italian,counters by chapter]{uniud}
 \pdfoutput=1
 
 \usepackage[T1]{fontenc}
@@ -9,12 +9,8 @@
 
 \usepackage{subfiles}
 
-% section numbering
-% depth 3: subsubsections but not subsubsubsections
-%\setcounter{secnumdepth}{3}
-
 % table of contents (TOC)
-% depth 2: sections and subsections
+% default 2: sections and subsections
 %\setcounter{tocdepth}{2}
 
 \hypersetup{
@@ -31,8 +27,6 @@
 %-------------------------------------------------------------------------------
 \usepackage{babel}
 \usepackage[all]{foreign}
-\defasforeign[mutatismutandis]{mutatis mutandis}
-\defasforeign[Mutatismutandis]{Mutatis mutandis}
 \defasforeign[criteria]{criteria}
 \defasforeign[criterium]{criterium}
 
@@ -116,7 +110,7 @@
 
 \blindtext
 
-\chapter*{Abstract}
+\chapter*{\abstractname}
 
 \blindtext
 
@@ -130,28 +124,32 @@
 
 \mainmatter
 
-\chapter{Chapter}
+\book{Book title}
+
+\part{Part title}
+
+\chapter{Chapter title}
 \blindmathtrue
 
 \blindtext
 
-\section{Section}
+\section{Section title}
 
 \blindtext
 
-\subsection{Subsection}
+\subsection{Subsection title}
 
 \blindtext
 
-\subsubsection{Subsubsection}
+\subsubsection{Subsubsection title}
 
 \blindtext
 
-\paragraph{Paragraph}
+\paragraph{Paragraph title}
 
 \blindtext
 
-\subparagraph{Subparagraph}
+\subparagraph{Subparagraph title}
 
 \blindtext
 
