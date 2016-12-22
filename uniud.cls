@@ -169,6 +169,14 @@
 }
 
 %
+% TOC
+%
+\renewcommand{\cftpartfont}{\normalfont}
+\renewcommand{\cftpartpagefont}{\normalfont} 
+\renewcommand{\cftchapterfont}{\normalfont}  
+\renewcommand{\cftchapterpagefont}{\normalfont} 
+
+%
 % Head styles
 %
 
@@ -202,7 +210,7 @@
     % record the actual height
 	\settototalheight{\chaptitleheight}{\vbox{\chaptitlefont\MakeTextLowercase{##1}}}%
   }
-
+	
   \renewcommand\afterchapternum{}
 
   \renewcommand\printchapternum{%
