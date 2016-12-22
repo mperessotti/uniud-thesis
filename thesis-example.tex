@@ -1,7 +1,7 @@
 %-------------------------------------------------------------------------------
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %-------------------------------------------------------------------------------
-\documentclass[italian,counters by chapter]{uniud}
+\documentclass[english,counters by chapter]{uniud}
 \pdfoutput=1
 
 \usepackage[T1]{fontenc}
@@ -106,13 +106,20 @@
 
 \maketitle
 
-\chapter*{Acknowledgements}
+% includes acknowledgements in the table of contents
+%\acknowledgementsintoc
+\begin{acknowledgements}
 
 \blindtext
 
-\chapter*{\abstractname}
+\end{acknowledgements}
+
+%\abstractintoc
+\begin{abstract}
 
 \blindtext
+
+\end{abstract}
 
 \cleardoublepage
 

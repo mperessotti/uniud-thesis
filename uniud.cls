@@ -333,6 +333,40 @@
 \renewcommand{\cftchapterpagefont}{\normalfont} 
 
 %
+% Acknowledgements
+%
+\DeclareTranslationFallback{acknowledgements}{Acknowledgements}
+\DeclareTranslation{Italian}{acknowledgements}{Ringraziamenti}
+
+\newbool{@addacktotoc}
+\boolfalse{@addacktotoc}
+\newcommand\acknowledgementsintoc{\booltrue{@addacktotoc}}
+\newenvironment{acknowledgements}{
+	\if@mainmatter
+		\ClassError{Uniud}{Acknowledgements cannot be used in the main matter.}	
+	\else
+		\if@addacktotoc
+			\chapter{\GetTranslation{acknowledgements}}
+		\else
+			\chapter*{\GetTranslation{acknowledgements}}
+		\fi
+	\fi
+}{}
+
+%
+% Abstract
+%
+\renewenvironment{abstract}{
+	\if@mainmatter
+		\ClassError{Uniud}{Abstract cannot be used in the main matter.}	
+	\else
+		\chapter*{\abstractname}
+		% use memoir's handling of abstract and toc instead
+		\put@bsintoc
+	\fi
+}{}
+
+%
 % Floats
 %
 
