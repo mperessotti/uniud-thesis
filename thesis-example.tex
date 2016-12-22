@@ -76,10 +76,13 @@
 	course={\uniudname{dima/informatica}}, % default
 	% mandatory
 	degree=phd,
-	candidate name={Grace ``Amazing'' Hopper},
-	academic year={1933-34},
-	title={New Types of Irreducibility Criteria},
+	candidate name={Grace Hopper},
+	title={New types of irreducibility criteria},
 	supervisor={{\O}ystein Ore},
+	% mandatory if degree=bachelor or master
+	%	academic year={1933/34},
+	% mandatory if degree=phd
+	phd cycle={xxviii},
 	% optional
 	candidate email={hopper.grace@spes.uniud.it},
 	candidate address={
@@ -90,14 +93,13 @@
 		Italia
 	},
 	candidate use gender=feminine,
-	%cosupervisor={CoSupervisor},
+	subtitle={Here goes the subtitle},
+%	cosupervisors={},
+%	cosupervisor={Co-supervisor},
+%	cosupervisors={Co-supervisor},
+	cosupervisors={Co-supervisor 1,Co-supervisor 2},
 	dedication={Dedication},
 	inside cover note={\today},
-}
-
-\hypersetup{
-  pdftitle={\pgfkeysvalueof{/uniud/title}},
-  pdfauthor={\pgfkeysvalueof{/uniud/candidate name}},
 }
 
 \begin{document}
@@ -109,12 +111,8 @@
 \frontmatter
 
 \maketitle
- 
-% \MakeTextLowercase{\expandafter\expandafter\expandafter\uniudname{uniud}}
-% 
-% \MakeTextLowercase{\pgfkeysvalueof{/uniud/title}}
 
-\chapter*{Acknowledgments}
+\chapter*{Acknowledgements}
 
 \blindtext
 

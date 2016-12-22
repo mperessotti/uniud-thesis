@@ -14,6 +14,7 @@
 % Basic LaTeX programming support
 \RequirePackage{etoolbox}
 \RequirePackage{xparse}
+\RequirePackage{xstring}
 \RequirePackage{calc}
 
 % Keyval options handling
@@ -26,6 +27,7 @@
 \newbool{@showframes}
 \newbool{@countersbychapter}
 \newbool{@candidategenderf}
+\newbool{@pdfmetadata}
 
 % Declare class options
 \pgfkeys{
@@ -42,12 +44,14 @@
     master/.style={degree=master},
     phd/.style={degree=phd},
 %
+    logo/.initial={graphics/pollo.pdf},
+		logo/.get = \@logopath,
+%
     department/.initial=\uniudname{dima},
 %
     course/.initial=\uniudname{dima/informatica},
 %
 		candidate name/.initial,
-		candidate name/.value required,
 		candidate email/.initial,
 		candidate address/.initial,
 %
@@ -56,16 +60,17 @@
     candidate use gender/masculine/.code=\boolfalse{@candidategenderf},
 %
     supervisor/.initial,
-    supervisor/.value required,
 %
-    cosupervisor/.initial,
+    cosupervisors/.initial,
+		cosupervisor/.style={cosupervisors={#1}},
 %
     title/.initial,
-    title/.value required,
+%
+    subtitle/.initial,
 %
     academic year/.initial,
-    academic year/.value required,
     year/.forward to=/uniud/academic year,
+		phd cycle/.initial,
 %
 		inside cover note/.initial,
 %
@@ -76,7 +81,10 @@
 %
     counters by chapter/.is if=@countersbychapter,
     counters by chapter/.initial=false,
-    countersbychapter/.forward to=/uniud/counters by chapter
+    countersbychapter/.forward to=/uniud/counters by chapter,
+%
+		pdfmetadata/.is if=@pdfmetadata,
+		pdfmetadata/.initial=true,
 }
 
 % Command to set uniud options
@@ -90,6 +98,35 @@
 
 % uniud utility package
 \RequirePackage{uniud}
+
+% Option validation
+\newcommand{\@CheckRequiredOpt}[2][]{%
+	\ifx\pgfkeysvalueof{/uniud/#2}\empty
+	    \ClassError{uniud}{Option '#2' is required}{#1}
+	\fi
+}
+\AtEndPreamble{
+	\@CheckRequiredOpt{title}
+	\@CheckRequiredOpt{supervisor}
+	\@CheckRequiredOpt{candidate name}
+	\if@phd%
+	  % 'cycle' is required for bachelor and master thesis
+	 	\@CheckRequiredOpt{phd cycle}
+	\else
+	 	% 'academic year' is required for bachelor and master thesis
+		\@CheckRequiredOpt{academic year}
+	\fi	
+}
+
+% pdf setup
+\if@pdfmetadata
+\AtEndPreamble{
+	\hypersetup{
+	  pdftitle={\pgfkeysvalueof{/uniud/title}},
+	  pdfauthor={\pgfkeysvalueof{/uniud/candidate name}},
+	}
+}
+\fi
 
 % Page Layout
 \checkandfixthelayout
@@ -386,19 +423,15 @@
   \let\oldcleardoublepage\cleardoublepage
   \let\cleardoublepage\clearpage
 	\def\scLarge{\fontsize{15pt}{14.4pt}\selectfont}
-	\def\scnormal{\fontsize{12.0pt}{11pt}\selectfont}
+	\def\scnormal{\fontsize{12.0pt}{11.5pt}\selectfont}
 	\def\blockskip{\vskip4pt}
   % cover page
   \begin{titlingpage}
     \calccentering{\unitlength}
     \begin{adjustwidth*}{\unitlength-\@borders}{-\unitlength-\@borders}%
-	    \begingroup%
-        \makebox[0pt][l]{%
-          \raisebox{-1.05\textheight}[0pt][0pt]{%
-            \includegraphics[draft=false,height=1.1\textheight]{graphics/mezzo-pollo-pallido.pdf}}}\hskip-0pt
-      \endgroup%
+			\centering
       \begingroup%
-        \raggedright\scshape%
+        \scshape%
 				\scLarge%
 	      \uniudname*{uniud}\par%
 	      \uniudname*{department} \pgfkeysvalueof{/uniud/department}\par%
@@ -413,40 +446,76 @@
 		  	\fi%
       	\MakeTextLowercase{\pgfkeysvalueof{/uniud/course}}\par
       \endgroup%
+			\vfill%
+			\vskip-1.5cm%
+			\includegraphics[draft=false,height=3cm]{\@logopath}
+			\vskip-1.5cm%
       \vfill%
       \begingroup%
-        \scshape\raggedright%
-        \fontsize{36pt}{30pt}\selectfont%
-				\MakeTextLowercase{\pgfkeysvalueof{/uniud/title}}\par
-      \endgroup%
-      \vfill%
-      \begingroup%
-	      \scshape\raggedright%
+        \scshape%
 				\scnormal%
-        \if@candidategenderf%
-			    \uniudname*{candidate (f)}:%
-			  \else%
-	    		\uniudname*{candidate (m)}:%
-        \fi%
-				\scLarge\par%
-				\MakeTextLowercase{\pgfkeysvalueof{/uniud/candidate name}}%
-				\blockskip%
-				\scnormal\par%
-        \uniudname*{supervisor}:%
-				\scLarge\par%
-        \MakeTextLowercase{\pgfkeysvalueof{/uniud/supervisor}}%
-				\if\pgfkeysvalueof{/uniud/cosupervisor}\empty\else%
-					\blockskip%
+				\uniudname*{dissertation}
+				\bigskip%
+				\par%
+        \fontsize{30pt}{22pt}\selectfont%
+				\MakeTextLowercase{\pgfkeysvalueof{/uniud/title}}\par%
+				\if\pgfkeysvalueof{/uniud/subtitle}\empty\else%
+					\medskip%
+					\fontsize{24pt}{20pt}\selectfont%
+					\MakeTextLowercase{\pgfkeysvalueof{/uniud/subtitle}}\par%
+				\fi
+      \endgroup%
+			\vfill%
+      \begingroup%
+			  \newlength\tpbox@width
+			  \setlength\tpbox@width{\dimexpr.5\textwidth-.5\columnsep}
+				\parbox[t]{\tpbox@width}{%
+					\centering\scshape\scnormal%
+					\if@candidategenderf%
+						\uniudname*{candidate (f)}%
+					\else%
+						\uniudname*{candidate (m)}%
+					\fi%
+					\scLarge\par%
+					\MakeTextLowercase{\pgfkeysvalueof{/uniud/candidate name}}%
+				}\hfill\parbox[t]{\tpbox@width}{%
+					\centering\scshape\scnormal%
+					\uniudname*{supervisor}%
+					\scLarge\par%
+					\MakeTextLowercase{\pgfkeysvalueof{/uniud/supervisor}}%
+					\if\pgfkeysvalueof{/uniud/cosupervisors}\empty\else
+						\par\bigskip%
+						\centering\scshape\scnormal%
+						\edef\@supervisors{\pgfkeysvalueof{/uniud/cosupervisors}}%
+						\StrCount{\@supervisors}{,}[\@numcosupervisors]
+						\ifnum\@numcosupervisors>1\relax
+					  	\uniudname*{cosupervisors}%
+						\else%
+							\uniudname*{cosupervisor}%
+						\fi%
+					  \scLarge%
+						\foreach \name in \@supervisors{%
+					  	\par\MakeTextLowercase{\name}%
+						}%
+					\fi
+				}
+			\endgroup%
+			\vfill%
+			\begingroup%
+	      \scshape%
+				\if@phd%
 					\scnormal\par%
-          \uniudname*{cosupervisor}:%
-	        \scLarge\par%
-          \MakeTextLowercase{\pgfkeysvalueof{/uniud/cosupervisor}}%
-        \fi%
-				\blockskip%
-				\scnormal\par%
-        \uniudname*{academicyear}:%
-        \scLarge\par%
-        \MakeTextLowercase{\pgfkeysvalueof{/uniud/academic year}}%
+					\uniudname*{phdcycle}%
+					\scLarge\par%
+					\MakeTextLowercase{\pgfkeysvalueof{/uniud/phd cycle}}%
+				\fi
+				\if\pgfkeysvalueof{/uniud/academic year}\empty\else
+					\if@phd\smallskip\fi%
+						\scnormal\par%
+		        \uniudname*{academicyear}%
+		        \scLarge\par%
+		        \MakeTextLowercase{\pgfkeysvalueof{/uniud/academic year}}%
+				\fi
       \endgroup%
     \end{adjustwidth*}
   \end{titlingpage}
@@ -523,5 +592,4 @@
 \notbool{@countersbychapter}{
   \counterwithout{listing}{chapter}
 }{}
-
 }{}}
