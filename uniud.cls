@@ -351,7 +351,7 @@
 			\chapter*{\GetTranslation{acknowledgements}}
 		\fi
 	\fi
-}{}
+}{\cleardoublepage}
 
 %
 % Abstract
@@ -364,7 +364,7 @@
 		% use memoir's handling of abstract and toc instead
 		\put@bsintoc
 	\fi
-}{}
+}{\cleardoublepage}
 
 %
 % Floats
