@@ -14,8 +14,11 @@
 % Basic LaTeX programming support
 \RequirePackage{etoolbox}
 \RequirePackage{xparse}
-\RequirePackage{xstring}
 \RequirePackage{calc}
+
+%-------------------------------------------------------------------------------
+%	OPTIONS
+%-------------------------------------------------------------------------------
 
 % Keyval options handling
 \RequirePackage{pgfopts}
@@ -29,52 +32,121 @@
 \newbool{@candidategenderf}
 \newbool{@pdfmetadata}
 
+%
+% The following code provides the two handlers:
+% 	.initial without value
+%		.unset.
+%
+\def\pgfkeys@@notset{\PackageError{pgfkeys}
+  {The \pgfkeyscurrentpath\space key has not been set to a value.}{}}
+\begingroup
+  \lccode`\Q=`\-
+  \lccode`\N=`\N
+  \lccode`\V=`\V
+  \lowercase{\endgroup
+    \def\pgfkeys@notset{QNoValue-\pgfkeys@@notset}}
+\pgfqkeys{/handlers}{%
+  .initial without value/.code/.expand once={%
+	  \expandafter\pgfkeyssetvalue\expandafter{\expandafter\pgfkeyscurrentpath\expandafter}\expandafter{\pgfkeys@notset}%
+  },
+  .unset/.code={
+    \pgfkeysifdefined{\pgfkeyscurrentpath}{
+	    \pgfkeys{\pgfkeyscurrentpath/.initial without value}
+	  }{
+		  \PackageError{pgfkeys}{The \pgfkeyscurrentpath\space key has not been initialized.}{}
+		}
+	}
+}
+
+\newcommand{\IfKeySetByUserTF}[3]{%
+	\expandafter\ifx\csname pgfk@#1\endcsname\pgfkeys@notset%
+		#3%
+	\else%
+		#2%
+	\fi%
+}
+\newcommand{\IfKeySetByUserT}[2]{\IfKeySetByUserTF{#1}{#2}{}}
+\newcommand{\IfKeySetByUserF}[2]{\IfKeySetByUserTF{#1}{}{#2}}
+
 % Declare class options
 \pgfkeys{
-  /uniud/.is family,
-  /uniud,
-    degree/.is choice,
-    degree/.value required,
-    degree/.cd,
-      bachelor/.is if=@bachelor,
-      master/.is if=@master,
-      phd/.is if=@phd,
-  /uniud,
-    bachelor/.style={degree=bachelor},
-    master/.style={degree=master},
-    phd/.style={degree=phd},
+	/uniud/.is family,
+	/uniud,
+		degree/.is choice,
+		degree/.value required,
+		degree/.cd,
+			bachelor/.is if=@bachelor,
+			master/.is if=@master,
+			phd/.is if=@phd,
+	/uniud,
+% 
+		bachelor/.style={degree=bachelor},
+		master/.style={degree=master},
+		phd/.style={degree=phd},
 %
-    logo/.initial={graphics/pollo.pdf},
-		logo/.get = \@logopath,
+		logo/.initial without value,
+		logo height/.initial without value,
 %
-    department/.initial=\uniudname{dima},
+		affiliation/.initial without value,
 %
-    course/.initial=\uniudname{dima/informatica},
+		institution/.code/.expand once={
+			% set this key
+			\pgfkeyssetvalue{/uniud/institution}{#1}
+			% update 'affiliation'
+			\updateAffiliation
+		},
 %
-		candidate name/.initial,
-		candidate email/.initial,
-		candidate address/.initial,
+		faculty/.code/.expand once={
+			% update this key
+			\pgfkeyssetvalue{/uniud/faculty}{\GetTranslation{facultyof} #1}
+			% update 'affiliation'
+			\updateAffiliation
+		},
+%
+		school/.code/.expand once={
+			% update this key
+			\pgfkeyssetvalue{/uniud/school}{\GetTranslation{schoolof} #1}
+			% update 'affiliation'
+			\updateAffiliation
+		},
+%
+		department/.code/.expand once={
+			% update this key
+			\pgfkeyssetvalue{/uniud/department}{\GetTranslation{departmentof} #1}
+			% update 'affiliation'
+			\updateAffiliation
+		},
+%
+		laboratory/.code/.expand once={
+			% update this key
+			\pgfkeyssetvalue{/uniud/laboratory}{\GetTranslation{laboratoryof} #1}
+			% update 'affiliation'
+			\updateAffiliation
+		},
+%
+    course/.initial without value,
+%
+		candidate name/.initial without value,
+		candidate email/.initial without value,
+		candidate address/.initial without value,
 %
 		candidate use gender/.is choice,
 		candidate use gender/feminine/.code=\booltrue{@candidategenderf},
     candidate use gender/masculine/.code=\boolfalse{@candidategenderf},
 %
-    supervisor/.initial,
+    supervisor/.initial without value,
 %
-    cosupervisors/.initial,
+    cosupervisors/.initial={},
 		cosupervisor/.style={cosupervisors={#1}},
 %
-    title/.initial,
+    title/.initial without value,
 %
-    subtitle/.initial,
+    subtitle/.initial without value,
 %
-    academic year/.initial,
-    year/.forward to=/uniud/academic year,
-		phd cycle/.initial,
+    academic year/.initial without value,
+		phd cycle/.initial without value,
 %
-		inside cover note/.initial,
-%
-		dedication/.initial,
+		inside cover note/.initial without value,
 %
     showframes/.is if=@showframes,
     showframes/.initial=false,
@@ -87,8 +159,48 @@
 		pdfmetadata/.initial=true,
 }
 
+% An helper for updating 'affiliation' key
+\newcommand\updateAffiliation{%
+	\pgfkeys{/uniud/affiliation={%
+		\pgfkeysvalueof{/uniud/institution},%
+		\pgfkeysvalueof{/uniud/faculty},%
+		\pgfkeysvalueof{/uniud/school},%
+		\pgfkeysvalueof{/uniud/department},%
+		\pgfkeysvalueof{/uniud/laboratory},%
+	}}}
+
+% Option validation
+\newcommand\@CheckRequiredOpt[2][Options can be set by means of \noexpand\uniudset]{%
+	\IfKeySetByUserF{/uniud/#2}{
+	    \ClassError{uniud}{Option '#2' is required}{#1}
+	}}
+\newcommand{\uniud@ValidateOptions}{
+	% check if the macro is expanded after the preamble
+	\ifx\@onlypreamble\@notprerr
+		\@CheckRequiredOpt{title}
+		\@CheckRequiredOpt{supervisor}
+		\@CheckRequiredOpt{candidate name}
+		\if@phd%
+			% 'cycle' is required for bachelor and master thesis
+			\@CheckRequiredOpt{phd cycle}
+		\else
+			% 'academic year' is required for bachelor and master thesis
+			\@CheckRequiredOpt{academic year}
+		\fi
+		\@CheckRequiredOpt{course}
+		\@CheckRequiredOpt{affiliation}
+	\fi
+}
+\AfterEndPreamble{\uniud@ValidateOptions}
+
 % Command to set uniud options
-\newcommand\uniudset[1]{\pgfqkeys{/uniud}{#1}}
+\NewDocumentCommand{\uniudset}{s +m}{
+	\pgfqkeys{/uniud}{#2}
+	\IfBooleanF{#1}{%
+		% check option consistency
+		\uniud@ValidateOptions
+	}
+}
 
 % Process class options
 \ProcessPgfOptions{/uniud}
@@ -97,36 +209,7 @@
 \LoadClass[a4paper,11pt]{memoir}
 
 % uniud utility package
-\RequirePackage{uniud}
-
-% Option validation
-\newcommand{\@CheckRequiredOpt}[2][]{%
-	\ifx\pgfkeysvalueof{/uniud/#2}\empty
-	    \ClassError{uniud}{Option '#2' is required}{#1}
-	\fi
-}
-\AtEndPreamble{
-	\@CheckRequiredOpt{title}
-	\@CheckRequiredOpt{supervisor}
-	\@CheckRequiredOpt{candidate name}
-	\if@phd%
-	  % 'cycle' is required for bachelor and master thesis
-	 	\@CheckRequiredOpt{phd cycle}
-	\else
-	 	% 'academic year' is required for bachelor and master thesis
-		\@CheckRequiredOpt{academic year}
-	\fi	
-}
-
-% pdf setup
-\if@pdfmetadata
-\AtEndPreamble{
-	\hypersetup{
-	  pdftitle={\pgfkeysvalueof{/uniud/title}},
-	  pdfauthor={\pgfkeysvalueof{/uniud/candidate name}},
-	}
-}
-\fi
+%\RequirePackage{uniud}
 
 % Page Layout
 \checkandfixthelayout
@@ -333,17 +416,26 @@
 \renewcommand{\cftchapterpagefont}{\normalfont} 
 
 %
+% Dedication
+%
+\newenvironment{dedication}{
+	\clearpage
+ 	\thispagestyle{empty}
+ 	\par\vspace*{.35\textheight}%
+	\centering\small%
+}{\cleardoublepage}
+
+
+
+%
 % Acknowledgements
 %
-\DeclareTranslationFallback{acknowledgements}{Acknowledgements}
-\DeclareTranslation{Italian}{acknowledgements}{Ringraziamenti}
-
 \newbool{@addacktotoc}
 \boolfalse{@addacktotoc}
 \newcommand\acknowledgementsintoc{\booltrue{@addacktotoc}}
 \newenvironment{acknowledgements}{
 	\if@mainmatter
-		\ClassError{Uniud}{Acknowledgements cannot be used in the main matter.}	
+		\ClassError{Uniud}{Acknowledgements cannot be used in the main matter.}{}	
 	\else
 		\if@addacktotoc
 			\chapter{\GetTranslation{acknowledgements}}
@@ -358,7 +450,7 @@
 %
 \renewenvironment{abstract}{
 	\if@mainmatter
-		\ClassError{Uniud}{Abstract cannot be used in the main matter.}	
+		\ClassError{Uniud}{Abstract cannot be used in the main matter.}{}	
 	\else
 		\chapter*{\abstractname}
 		% use memoir's handling of abstract and toc instead
@@ -380,8 +472,20 @@
 %
 
 \RequirePackage{nameref}
-\RequirePackage{hyperref}
+\RequirePackage[hypertexnames=false]{hyperref}
 \RequirePackage[capitalise,noabbrev,nameinlink]{cleveref}
+%\RequirePackage{autonum}
+%\if@cref@capitalise
+
+% pdf setup
+\if@pdfmetadata
+\AtEndPreamble{
+	\hypersetup{
+	  pdftitle={\pgfkeysvalueof{/uniud/title}},
+	  pdfauthor={\pgfkeysvalueof{/uniud/candidate name}},
+	}
+}
+\fi
 
 %
 % Lists, enums, etc.
@@ -445,14 +549,18 @@
 \declaretheorem[
   name=\@cref@name{remark},
   parent=chapter,
-  style=remark,
-	qed=$\triangleleft$
+  style=remark
 ]{remark}
 
 \declaretheorem[
+  name=\@cref@name{remark},
+  parent=chapter,
+  style=remark
+]{note}
+
+\declaretheorem[
   name=\@cref@name{example},
-  sibling=remark,
-	qed=$\triangleleft$
+  sibling=remark
 ]{example}
 
 % Continuous numbering of floats and equations
@@ -460,7 +568,6 @@
 \AtEndPreamble{
   \notbool{@countersbychapter}{
     \counterwithout{table}{chapter}
-    \counterwithout{listing}{chapter}
     \counterwithout{equation}{chapter}
     \counterwithout{theorem}{chapter}
     \counterwithout{definition}{chapter}
@@ -482,7 +589,7 @@
 	headfont=\normalfont\scshape,
 	notefont=\normalfont, notebraces={(}{)},
 	bodyfont=\normalfont\itshape,
-	headformat={\MakeTextLowercase{\NAME{}} \NUMBER \NOTE}
+	headformat={\MakeTextLowercase{\expandafter\NAME{}} \NUMBER \NOTE}
 ]{plain}
 
 \declaretheoremstyle[
@@ -492,7 +599,7 @@
 	headfont=\normalfont\scshape,
 	notefont=\normalfont, notebraces={(}{)},
 	bodyfont=\normalfont\itshape,
-	headformat={\MakeTextLowercase{\NAME{}} \NUMBER \NOTE}
+	headformat={\MakeTextLowercase{\expandafter\NAME{}} \NUMBER \NOTE}
 ]{definition}
 
 \declaretheoremstyle[
@@ -502,16 +609,68 @@
 	headfont=\normalfont\scshape,
 	notefont=\normalfont, notebraces={(}{)},
 	bodyfont=\normalfont,
-	headformat={\MakeTextLowercase{\NAME{}} \NUMBER \NOTE}
+	headformat={\MakeTextLowercase{\expandafter\NAME{}} \NUMBER \NOTE},,
+	qed={$\triangleleft$}
 ]{remark}
 
 % redefine ams proof environment to match the style used for theorems etc.
-
 \renewenvironment{proof}[1][\proofname] {\par\pushQED{\qed}\normalfont\topsep6\p@\@plus6\p@\relax\trivlist\item[\hskip\labelsep\normalfont\scshape\MakeTextLowercase{#1}\@addpunct{.}]\ignorespaces}{\popQED\endtrivlist\@endpefalse}
+
+%-------------------------------------------------------------------------------
+%	LOCALIZATION
+%-------------------------------------------------------------------------------
+\RequirePackage{translations}
+
+\DeclareTranslationFallback {bachelorin}{Bachelor Degree in}
+\DeclareTranslation{Italian}{bachelorin}{Corso di Laurea Triennale in}
+
+\DeclareTranslationFallback {masterin}{Master Degree in}
+\DeclareTranslation{Italian}{masterin}{Corso di Laurea Magistrale in}
+
+\DeclareTranslationFallback {phdin}{Ph.D. in}
+\DeclareTranslation{Italian}{phdin}{Dottorato di Ricerca in}
+
+\DeclareTranslationFallback {dissertation}{Dissertation}
+\DeclareTranslation{Italian}{dissertation}{Dissertazione}
+
+\DeclareTranslationFallback {facultyof}{Faculty of}
+\DeclareTranslation{Italian}{facultyof}{Facolt\'a di}
+
+\DeclareTranslationFallback {schoolof}{School of}
+\DeclareTranslation{Italian}{schoolof}{Scuola di}
+
+\DeclareTranslationFallback {departmentof}{Department of}
+\DeclareTranslation{Italian}{departmentof}{Dipartimento di}
+
+\DeclareTranslationFallback {laboratoryof}{Laboratory of}
+\DeclareTranslation{Italian}{laboratoryof}{Laboratorio di}
+
+\DeclareTranslationFallback {academicyear}{Academic year}
+\DeclareTranslation{Italian}{academicyear}{Anno accademico}
+
+\DeclareTranslationFallback {phdcycle}{Cycle}
+\DeclareTranslation{Italian}{phdcycle}{Ciclo}
+
+\DeclareTranslationFallback {supervisor}{Supervisor}
+\DeclareTranslation{Italian}{supervisor}{Supervisore}
+
+\DeclareTranslationFallback {cosupervisor}{Co-supervisor}
+\DeclareTranslation{Italian}{cosupervisor}{Co-supervisore}
+\DeclareTranslationFallback {cosupervisors}{Co-supervisors}
+\DeclareTranslation{Italian}{cosupervisors}{Co-supervisori}
+
+\DeclareTranslationFallback {candidate (f)}{Candidate}
+\DeclareTranslationFallback {candidate (m)}{Candidate}
+\DeclareTranslation{Italian}{candidate (f)}{Candidata}
+\DeclareTranslation{Italian}{candidate (m)}{Candidato}
+
+\DeclareTranslationFallback {acknowledgements}{Acknowledgements}
+\DeclareTranslation{Italian}{acknowledgements}{Ringraziamenti}
 
 %-------------------------------------------------------------------------------
 %	COVER
 %-------------------------------------------------------------------------------
+\RequirePackage{xstring}
 
 \renewcommand\maketitle{%
   \newlength\@borders
@@ -523,34 +682,47 @@
 	\def\blockskip{\vskip4pt}
   % cover page
   \begin{titlingpage}
+		\newlength\tpbox@width
+		\setlength\tpbox@width{\dimexpr.5\textwidth-.5\columnsep}
     \calccentering{\unitlength}
     \begin{adjustwidth*}{\unitlength-\@borders}{-\unitlength-\@borders}%
 			\centering
       \begingroup%
         \scshape%
 				\scLarge%
-	      \uniudname*{uniud}\par%
-	      \uniudname*{department} \pgfkeysvalueof{/uniud/department}\par%
+				\edef\uniud@affiliation{\pgfkeysvalueof{/uniud/affiliation}}
+				\foreach \line in \uniud@affiliation{%
+					\MakeTextLowercase{\line}\par%
+				}%
 	      \if@phd%
-          \uniudname*{phd}
+          \GetLCTranslation{phdin}
 			  \else%
 					\if@master%
-					  \uniudname*{master}
+					  \GetLCTranslation{masterin}
 					\else%
-					  \uniudname*{bachelor}
+					  \GetLCTranslation{bachelorin}
 					\fi%
 		  	\fi%
       	\MakeTextLowercase{\pgfkeysvalueof{/uniud/course}}\par
       \endgroup%
 			\vfill%
-			\vskip-1.5cm%
-			\includegraphics[draft=false,height=3cm]{\@logopath}
-			\vskip-1.5cm%
+			\IfKeySetByUserT{/uniud/logo}{%
+				\newlength\uniud@logo@height%
+				\IfKeySetByUserTF{/uniud/logo height}{%
+					\setlength\expandafter\pgfkeysvalueof{/uniud/logo height}%
+				}{%
+					\setlength\uniud@logo@height{3cm}%
+				}%
+				\vskip-.5\uniud@logo@height%
+				\edef\uniud@logopath{\pgfkeysvalueof{/uniud/logo}}
+				\includegraphics[draft=false,height=\uniud@logo@height]{\uniud@logopath}
+				\vskip-.5\uniud@logo@height%
+			}
       \vfill%
       \begingroup%
         \scshape%
 				\scnormal%
-				\uniudname*{dissertation}
+				\GetLCTranslation{dissertation}
 				\bigskip%
 				\par%
         \fontsize{30pt}{22pt}\selectfont%
@@ -562,56 +734,58 @@
 				\fi
       \endgroup%
 			\vfill%
+			% candidate, supercisor, cosupervisors
       \begingroup%
-			  \newlength\tpbox@width
-			  \setlength\tpbox@width{\dimexpr.5\textwidth-.5\columnsep}
 				\parbox[t]{\tpbox@width}{%
 					\centering\scshape\scnormal%
 					\if@candidategenderf%
-						\uniudname*{candidate (f)}%
+						\GetLCTranslation{candidate (f)}%
 					\else%
-						\uniudname*{candidate (m)}%
+						\GetLCTranslation{candidate (m)}%
 					\fi%
 					\scLarge\par%
 					\MakeTextLowercase{\pgfkeysvalueof{/uniud/candidate name}}%
 				}\hfill\parbox[t]{\tpbox@width}{%
 					\centering\scshape\scnormal%
-					\uniudname*{supervisor}%
+					\GetLCTranslation{supervisor}%
 					\scLarge\par%
 					\MakeTextLowercase{\pgfkeysvalueof{/uniud/supervisor}}%
 					\if\pgfkeysvalueof{/uniud/cosupervisors}\empty\else
 						\par\bigskip%
 						\centering\scshape\scnormal%
-						\edef\@supervisors{\pgfkeysvalueof{/uniud/cosupervisors}}%
-						\StrCount{\@supervisors}{,}[\@numcosupervisors]
-						\ifnum\@numcosupervisors>0\relax
-					  	\uniudname*{cosupervisors}%
+						\edef\uniud@supervisors{\pgfkeysvalueof{/uniud/cosupervisors}}%
+						\StrCount{\uniud@supervisors}{,}[\uniud@numcosupervisors]
+						\ifnum\uniud@numcosupervisors>0\relax
+					  	\GetLCTranslation{cosupervisors}%
 						\else%
-							\uniudname*{cosupervisor}%
+							\GetLCTranslation{cosupervisor}%
 						\fi%
 					  \scLarge%
-						\foreach \name in \@supervisors{%
+						\foreach \name in \uniud@supervisors{%
 					  	\par\MakeTextLowercase{\name}%
 						}%
 					\fi
 				}
 			\endgroup%
 			\vfill%
+			% phd cycle and academic year
 			\begingroup%
-	      \scshape%
-				\if@phd%
-					\scnormal\par%
-					\uniudname*{phdcycle}%
-					\scLarge\par%
-					\MakeTextLowercase{\pgfkeysvalueof{/uniud/phd cycle}}%
-				\fi
-				\if\pgfkeysvalueof{/uniud/academic year}\empty\else
-					\if@phd\smallskip\fi%
-						\scnormal\par%
-		        \uniudname*{academicyear}%
+				\IfKeySetByUserT{/uniud/phd cycle}{
+					\parbox[t]{\tpbox@width}{%
+						\centering\scshape\scnormal%
+		        \GetLCTranslation{phdcycle}%
+		        \scLarge\par%
+		        \MakeTextLowercase{\pgfkeysvalueof{/uniud/phd cycle}}%
+					}%
+					\IfKeySetByUserT{/uniud/academic year}{\hfill}%
+				}%
+				\IfKeySetByUserT{/uniud/academic year}{
+					\parbox[t]{\tpbox@width}{%
+						\centering\scshape\scnormal%
+		        \GetLCTranslation{academicyear}%
 		        \scLarge\par%
 		        \MakeTextLowercase{\pgfkeysvalueof{/uniud/academic year}}%
-				\fi
+				}}%
       \endgroup%
     \end{adjustwidth*}
   \end{titlingpage}
@@ -622,28 +796,22 @@
       \begingroup%
 				\raggedright%
 				\normalsize%
- 				\if\pgfkeysvalueof{/uniud/candidate email}\empty\else%
+ 				\IfKeySetByUserT{/uniud/candidate email}{%
 	        \pgfkeysvalueof{/uniud/candidate email}%
 	        \par\vskip4pt%
-				\fi%
-				\if\pgfkeysvalueof{/uniud/candidate address}\empty\else%
+				}%
+				\IfKeySetByUserT{/uniud/candidate address}{%
           \pgfkeysvalueof{/uniud/candidate address}%
 	        \par\vskip4pt%
-				\fi%
-        \if\pgfkeysvalueof{/uniud/inside cover note}\empty\else%
+				}%
+        \IfKeySetByUserT{/uniud/inside cover note}{%
           \vskip4pt%
           \pgfkeysvalueof{/uniud/inside cover note}%
 	        \par\vskip4pt%
-				\fi%
+				}%
       \endgroup%
     \end{adjustwidth*}
   \end{titlingpage}
-	% dedication page
-	\if\pgfkeysvalueof{/uniud/dedication}\empty\else%
-		\clearpage
-		\par\vspace*{.35\textheight}{\centering\small\pgfkeysvalueof{/uniud/dedication}\par}
-		\thispagestyle{empty}
-	\fi
   % restore \cleardoublepage expected behaviour
   \let\cleardoublepage\oldcleardoublepage
 }
@@ -657,9 +825,7 @@
 %
 \AtEndPreamble{
 	\@ifpackageloaded{biblatex}{
-	
 		\RequirePackage{csquotes}
-			
 		\defbibheading{bibliography}{%
 			\chapter*{#1}%
 			\addcontentsline{toc}{chapter}{#1}
@@ -682,7 +848,7 @@
 
 % 'listing' floating environment
 \newfloat[chapter]{listing}{lol}{\GetTranslation{listing}}
-\crefname{listing}{\GetTranslation{listing}}{\GetTranslation{listings}}
+%\crefname{listing}{\GetTranslation{listing}}{\GetTranslation{listings}}
 
 % Continuous numbering
 \notbool{@countersbychapter}{

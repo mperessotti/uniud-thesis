@@ -1,7 +1,7 @@
 %-------------------------------------------------------------------------------
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %-------------------------------------------------------------------------------
-\documentclass[english,counters by chapter]{uniud}
+\documentclass[italian,english,counters by chapter]{uniud}
 \pdfoutput=1
 
 \usepackage[T1]{fontenc}
@@ -19,6 +19,8 @@
 	% link on both page and title in TOC
 	linktoc=all
 }
+
+\usepackage{autonum}
 
 \usepackage{lipsum,blindtext} % generates demo text
 
@@ -65,27 +67,38 @@
 %-------------------------------------------------------------------------------
 %	TITLE PAGE
 %-------------------------------------------------------------------------------
+
+\usepackage{uniud}
+\uniudsetdefaults
+
 \uniudset{
-	department={\uniudname{dima}}, %default
-	course={\uniudname{dima/informatica}}, % default
+%	institution={Institution Name}, 
+%	faculty={Faculty Name},
+%	department={Department Name},
+%	affiliation={
+%		University of Udine, 
+%		{Department of Mathemathics, Computer Science and Phisics},
+%		Laboratory of Models and Applications of Distributed Systems
+%	},
+% department=\uniudname{dima}
+%	course=\uniudname{dima/informatica},
 	% mandatory
 	degree=phd,
-	candidate name={Grace Hopper},
-	title={New types of irreducibility criteria},
-	supervisor={{\O}ystein Ore},
+	candidate name={Name Surname},
+	title={Here goes the title},
+	supervisor={Name Surname},
 	% mandatory if degree=bachelor or master
-	%	academic year={1933/34},
+%	academic year={YYYY/YY},
 	% mandatory if degree=phd
 	phd cycle={xxviii},
 	% optional
-	candidate email={hopper.grace@spes.uniud.it},
+	candidate email={candidates@mail},
 	candidate use gender=feminine,
 	subtitle={Here goes the subtitle},
 %	cosupervisors={},
-%	cosupervisor={Co-supervisor},
-%	cosupervisors={Co-supervisor},
-	cosupervisors={Co-supervisor 1,Co-supervisor 2},
-	dedication={Dedication},
+%	cosupervisor={Name Surname},
+%	cosupervisors={Name Surname},
+%	cosupervisors={Name Surname,Name Surname},
 	inside cover note={
 		Dipartimento di Matematica, Informatica e Fisica\\
 		Università degli Studi di Udine\\
@@ -107,20 +120,27 @@
 
 \maketitle
 
+\begin{dedication}
+	Dedication
+\end{dedication}
+
 % includes acknowledgements in the table of contents
 %\acknowledgementsintoc
 \begin{acknowledgements}
-
-\blindtext
-
+	\blindtext
 \end{acknowledgements}
 
 %\abstractintoc
 \begin{abstract}
-
-\blindtext
-
+	\blindtext
 \end{abstract}
+
+% abstract in another language
+\begin{otherlanguage}{italian}
+	\begin{abstract}
+		\blindtext
+	\end{abstract}
+\end{otherlanguage}
 
 \tableofcontents*
 
@@ -146,6 +166,26 @@
 \subsection{Subsection title}
 
 \blindtext
+
+\begin{equation}
+	\label{eq:a}
+	a = a
+\end{equation}
+
+\begin{equation}
+	\label{eq:b}
+	\tag{$\dagger$}
+	b = b
+\end{equation}
+
+\begin{equation}
+	\label{eq:c}
+	c = c
+\end{equation}
+
+\eqref{eq:a}
+\eqref{eq:b}
+
 
 \subsubsection{Subsubsection title}
 
@@ -191,6 +231,7 @@ Description
 	\label{thm:first}
 	Theorem
 \end{theorem}
+
 \begin{proof}
 	Proof
 \end{proof}

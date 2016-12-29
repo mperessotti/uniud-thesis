@@ -16,16 +16,25 @@
 \RequirePackage{translations}
 
 %
-% Graphics
 %
-\newcommand\uniudlogo[1][]{\includegraphics[#1]{graphics/pollo.pdf}}
+%
+\newcommand\uniudsetdefaults{
+	% check if the macro is expanded after the preamble
+	\ifx\@onlypreamble\@notprerr
+		\PackageError{uniud}{\noexpand\uniudsetdefaults can be used only in the preamble}
+	\else
+	\uniudset{
+		institution=\uniudname{uniud},
+		department=\uniudname{dima},
+		course=\uniudname{dima/informatica},
+		logo={graphics/pollo.pdf},
+	}
+	\fi
+}
 
 %
 % Macros to register institutional names. Supported languages are italian
 % and english
-
-\DeclareTranslationFallback {uniud}{Universit\`a degli Studi di Udine}
-\DeclareTranslation{English}{uniud}{University of Udine}
 
 \newcommand\newuniudname[3][]{
   \csuse{newuniudname@#1}{#2}{#3}
@@ -67,45 +76,9 @@
 \newuniudname[italian]{uniud}{Universit\`a degli Studi di Udine}
 \newuniudname[english]{uniud}{University of Udine}
 
-\newuniudname[italian]{bachelor}{Corso di Laurea Triennale in}
-\newuniudname[english]{bachelor}{Bachelor Degree in}
-
-\newuniudname[italian]{master}{Corso di Laurea Magistrale in}
-\newuniudname[english]{master}{Master Degree in}
-
-\newuniudname[italian]{phd}{Dottorato di Ricerca in}
-\newuniudname[english]{phd}{Ph.D. in}
-
-\newuniudname[italian]{dissertation}{Dissertazione}
-\newuniudname[english]{dissertation}{Dissertation}
-
-\newuniudname[italian]{department}{Dipartimento di}
-\newuniudname[english]{department}{Department of}
-
-\newuniudname[italian]{academicyear}{Anno accademico}
-\newuniudname[english]{academicyear}{Academic year}
-
-\newuniudname[italian]{phdcycle}{Ciclo}
-\newuniudname[english]{phdcycle}{Cycle}
-
-\newuniudname[italian]{supervisor}{Supervisore}
-\newuniudname[english]{supervisor}{Supervisor}
-
-\newuniudname[italian]{cosupervisor}{Co-supervisore}
-\newuniudname[english]{cosupervisor}{Co-supervisor}
-\newuniudname[italian]{cosupervisors}{Co-supervisori}
-\newuniudname[english]{cosupervisors}{Co-supervisors}
-
-\newuniudname[italian]{candidate (f)}{Candidata}
-\newuniudname[italian]{candidate (m)}{Candidato}
-\newuniudname[english]{candidate (f)}{Candidate}
-\newuniudname[english]{candidate (m)}{Candidate}
-
-
 %
 % DIMA
 %
-
 \newuniudname[italian]{dima}{Scienze Matematiche Informatiche e Fisiche}
 \newuniudname[english]{dima}{Mathematics, Computer Science and Physics}
 
