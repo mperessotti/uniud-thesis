@@ -1,42 +1,182 @@
 %-------------------------------------------------------------------------------
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %-------------------------------------------------------------------------------
-\documentclass[italian,english,counters by chapter]{uniud}
-\pdfoutput=1
+\documentclass[italian,english]{uniud}
+% The class supports only italian and english and follows the conventions of 
+% the package 'babel'. Both italian and english can be loaded in order to 
+% support bilingual documents. In this case, the leanguage loaded last is the 
+% main one i.e. the one used for localising the document strings (e.g. theorem 
+% or definition). The main language can be changed locally (e.g. to provide 
+% translated abstracts or acknowledgments) via babel's 'otherlanguage' 
+% environment. 
+% Paper is set to A4.
+% Reference font size is 11pt.
 
+% font encoding
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 
-\usepackage{subfiles}
+% Utility package for the University of Udine 
+% (e.g. institutional names and translations)
+\usepackage{uniud}
+% Loads the default configuration for the University of Udine:
+%  - affiliation (university and department)
+%  - logo
+%  - course
+% To override the configuration just use '\uniudset' to provide new values.
+\uniudsetdefaults
 
-% table of contents (TOC)
-% default 2: sections and subsections
-%\setcounter{tocdepth}{2}
-
-\hypersetup{
-	% do not highlight hyperlinks such as citations
-	hidelinks,
-	% link on both page and title in TOC
-	linktoc=all
+% Document configuration (avoid blank lines)
+\uniudset{
+	% 'counters by chapter' 
+	% - Boolean
+	% - Selects the numbering of figures, theorems, equations, etc.
+	%   - 'true':  hirearchical numbering by chapter (e.g. Figure 1.2)
+	%   - 'false': flat numbering (e.g. Figure 1) 
+	% - Defaults to flat numbering
+	counters by chapter=true,
+	% ---------------------------------------
+	% 'content lists style'
+	% - Enum: compact, single, double
+	% - By default, content lists defined by Memoir's '\newlistof' like the table 
+	%   of contents (TOC), the list of figures (LOF), and the list of tables (LOT)
+	%   are typeset as chapters. If
+	%     content lists style=compact,
+	%  then lists do not insert new pages (this is the default behaviour). If
+	%     content lists style=single,
+	%  then each list starts on a new page. Finally, if
+	%     content lists style=double,
+	%  then each list behaves like a proper chapter.
+	% ---------------------------------------
+	% 'affiliation' [mandatory]
+	% - List of strings
+	% - Describes the candidate affiliation. String with commas must be wrapped
+	%   by braces e.g.:
+	%     affiliation={
+	%       University of Udine, 
+	%       {Department of Mathemathics, Computer Science and Phisics},
+	%       Laboratory of Models and Applications of Distributed Systems
+	%     }
+	% - This field is mandatory. Besides setting 'affiliation' directly, the 
+	%   class supports the following fields: 
+	%     - 'institution'
+	%     - 'faculty'
+	%     - 'school'
+	%     - 'department'
+	%     - 'laboratory'
+	%   The field 'faculty' prepends 'Faculty of' or 'Facoltà di' (accordingly to 
+	%   the main language) to its value. Fields 'school', 'department', and 
+	%   'laboratory' work liekwise. Whenever any of these is set, 'affiliation' 
+	%   is updated. The order is the same of the list above. The package 'uniud' 
+	%   provides localised standard names e.g.: department=\uniudname{dima}.
+	% ---------------------------------------
+	% 'course' [mandatory]
+	% - String
+	% - The course name. The utility package 'uniud' provides localised standard %   names e.g.: course=\uniudname{dima\informatica}.
+	% ---------------------------------------
+	% 'degree' [mandatory]
+	% - Enum: bachelor, master, phd (triennale, magistrale, dottorato)
+	degree=phd,
+	% ---------------------------------------
+	% 'title' [mandatory]
+	% - String
+	% - Title of the thesis
+	title={Here goes the title},
+	% ---------------------------------------
+	% 'subtitle'
+	% - String
+	% - A subtitle is not mandatory, the field can be omitted.
+	subtitle={Here goes the subtitle},
+	% ---------------------------------------
+	% 'candidate name' [mandatory]
+	% - String
+	candidate name={Name Surname},
+	candidate use gender=feminine,
+	candidate contacts={
+		\email{candidate@mail}\par
+		Dipartimento di Matematica, Informatica e Fisica\\
+		Università degli Studi di Udine\\
+		Via delle Scienze, 206\\
+		33100 Udine\\
+		Italia
+	},
+	% ---------------------------------------
+	% 'supervisor name' [mandatory]
+	% - String
+	% - Supervisor/Relatore
+	supervisor name={Name Surname},
+	supervisor contacts={
+		\email{supervisor@mail}\par
+		Dipartimento di Matematica, Informatica e Fisica\\
+		Università degli Studi di Udine\\
+		Via delle Scienze, 206\\
+		33100 Udine\\
+		Italia
+	},
+	% ---------------------------------------
+	% 'cosupervisors' 
+	% - List of strings
+	% - Lists the co-supervisors names, e.g.:
+	      cosupervisors={
+	        Name Surname,
+	        Name Surname
+	      },
+	% ---------------------------------------
+	% 'cosupervisor' 
+	% - List of strings
+	% - This field is a shorthand for 'cosupervisors' where the list is a 
+	%   singleton. For instance
+	%     cosupervisor={Name Surname},
+	%   is equivalent to
+	%     cosupervisors={Name Surname},
+	% ---------------------------------------
+	% 'academic year' [conditional]
+	% - String
+	% - The field is mandatory whenever 'degree' is either 'bachelor' or 'master'.
+	%	academic year={YYYY/YY},
+	% ---------------------------------------
+	% 'phd cycle' [conditional]
+	%	- String
+	% - The field is mandatory whenever 'degree' is set to 'phd' and ignored 
+	%   otherwise.
+	phd cycle={xxviii},
+	% ---------------------------------------
+	% 'date'
+	% - String
+	date=\today,
+	% ---------------------------------------
+	% 'revision'
+	% - String
+	revision={Draft},
+	% ---------------------------------------
+	% 'inside cover note'
+	% - String
+	% - Anything to be typeset in the inside cover (right after the title page)
+	%	inside cover note={}
 }
 
-\usepackage{autonum}
-
-\usepackage{lipsum,blindtext} % generates demo text
-
-%-------------------------------------------------------------------------------
-%	FOREIGN
-%-------------------------------------------------------------------------------
+%	FOREIGN ----------------------------------------------------------------------
 \usepackage{babel}
 \usepackage[all]{foreign}
 \defasforeign[criteria]{criteria}
 \defasforeign[criterium]{criterium}
 
+%	DOCUMENT ORGANIZATION --------------------------------------------------------
+\usepackage{subfiles}
 
-%-------------------------------------------------------------------------------
-%	BIBLATEX
-%-------------------------------------------------------------------------------
+\usepackage{currfile}
 
+\ifdefined\docroot\else
+	\let\docroot\currfilepath
+\fi
+
+\newcommand\IfDocRootTF[2]{%
+	\ifcurrfilepath{\docroot}{#1}{#2}%
+}
+\newcommand\IfDocRootT[1]{\IfDocRootTF{#1}{}}
+\newcommand\IfDocRootF[1]{\IfDocRootTF{}{#1}}
+
+%	BIBLATEX ---------------------------------------------------------------------
 \usepackage[
 	backend=bibtex, %backend=biber
 	% numeric citations with compression of consecutive numers
@@ -55,94 +195,85 @@
 	]{biblatex}
 \addbibresource{dummy.bib} %biblio sources
 
-%-------------------------------------------------------------------------------
-%	TiKZ
-%-------------------------------------------------------------------------------
-\usepackage{tikz}
-
-%-------------------------------------------------------------------------------
-%	COMMANDS
-%-------------------------------------------------------------------------------
-
-%-------------------------------------------------------------------------------
-%	TITLE PAGE
-%-------------------------------------------------------------------------------
-
-\usepackage{uniud}
-\uniudsetdefaults
-
-\uniudset{
-%	institution={Institution Name}, 
-%	faculty={Faculty Name},
-%	department={Department Name},
-%	affiliation={
-%		University of Udine, 
-%		{Department of Mathemathics, Computer Science and Phisics},
-%		Laboratory of Models and Applications of Distributed Systems
-%	},
-% department=\uniudname{dima}
-%	course=\uniudname{dima/informatica},
-	% mandatory
-	degree=phd,
-	candidate name={Name Surname},
-	title={Here goes the title},
-	supervisor={Name Surname},
-	% mandatory if degree=bachelor or master
-%	academic year={YYYY/YY},
-	% mandatory if degree=phd
-	phd cycle={xxviii},
-	% optional
-	candidate email={candidates@mail},
-	candidate use gender=feminine,
-	subtitle={Here goes the subtitle},
-%	cosupervisors={},
-%	cosupervisor={Name Surname},
-%	cosupervisors={Name Surname},
-%	cosupervisors={Name Surname,Name Surname},
-	inside cover note={
-		Dipartimento di Matematica, Informatica e Fisica\\
-		Università degli Studi di Udine\\
-		Via delle Scienze, 206\\
-		33100 Udine\\
-		Italia\par
-		\medskip
-		\today
-	},
+%	CROSS REFS -------------------------------------------------------------------
+\hypersetup{
+	% do not highlight hyperlinks such as citations
+	hidelinks,
+	% link on both page and title in TOC
+	linktoc=all
 }
 
+%	TIKZ -------------------------------------------------------------------------
+\usepackage{tikz}
+
+% DEMO -------------------------------------------------------------------------
+\usepackage{lipsum,blindtext} % generates demo text
+
+%	COMMANDS ---------------------------------------------------------------------
+
+
+%-------------------------------------------------------------------------------
+%	END PREAMBLE
+%-------------------------------------------------------------------------------
 \begin{document}
 
 %-------------------------------------------------------------------------------
 %	FRONT MATTER
 %-------------------------------------------------------------------------------
-
 \frontmatter
 
+% Makes the title page
 \maketitle
 
+% Includes a dedication page
 \begin{dedication}
 	Dedication
 \end{dedication}
 
-% includes acknowledgements in the table of contents
+% The environment 'acknowledgements' creates pages for acknowledgements. By 
+% default these are not listed in the table of contents (hereafter TOC). The 
+% macro '\acknowledgementsintoc' makes any following acknowledgements page 
+% appear in the TOC.
 %\acknowledgementsintoc
 \begin{acknowledgements}
 	\blindtext
 \end{acknowledgements}
 
+%\begin{otherlanguage}{italian}
+%\begin{acknowledgements*}
+%	\blindtext
+%\end{acknowledgements*}
+%\end{otherlanguage}
+
+\cleardoublepage
+
+% The environment 'abstract' creates pages for the thesis abstract. By default
+% these are not listed in the TOC. The macro '\abstractintoc' makes any 
+% following abstract page appear in the TOC.
 %\abstractintoc
+
 \begin{abstract}
 	\blindtext
 \end{abstract}
 
-% abstract in another language
+% Sometimes, a translation of the thesis abstract may be required. The main language can be changed locally by means of babel's 'otherlanguage' environment. (The same applies to acknowledgements.)
 \begin{otherlanguage}{italian}
 	\begin{abstract}
 		\blindtext
 	\end{abstract}
 \end{otherlanguage}
 
+\cleardoublepage
+
+% The commands '\tableofcontents', '\listoffigures', and '\listoftables' typeset, respectively, the table of contents (TOC), the list of figures (LOF), and the list of tables (LOT). All these commands have a starred version (e.g. '\tableofcontents*') which does not add the respective title in the TOC. By default listings like TOC, LOF, and LOT do not always start on odd (or new) pages like ordinary chapters. This behaviour can be changed locally via '\clearpage' and '\cleardoublepage' and globally via the class option 'content lists style'.
+
 \tableofcontents*
+
+\clearpage
+
+\listoffigures*
+
+\listoftables*
 
 %-------------------------------------------------------------------------------
 %	MAIN MATTER
@@ -275,13 +406,17 @@ Description
 
 Here are some references and citations: \Cref{def:first,fig:first}  \cite{article,book,booklet,conference,inbook,incollection,manual,mastersthesis,misc,phdthesis,proceedings,techreport,unpublished}.
 
+\IfDocRootTF{A}{B}
+
 \subfile{subfile-example}
+
+\IfDocRootTF{A}{B}
 
 %-------------------------------------------------------------------------------
 %	BACK MATTER
 %-------------------------------------------------------------------------------
 
-%\backmatter
+\backmatter
 
 \printbibliography
 

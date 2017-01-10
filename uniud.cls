@@ -37,14 +37,41 @@
 % 	.initial without value
 %		.unset.
 %
-\def\pgfkeys@@notset{\PackageError{pgfkeys}
-  {The \pgfkeyscurrentpath\space key has not been set to a value.}{}}
+% \newcommand*\pgfkeys@@notset[1]{
+% 	\typeout{DEBUG: C \pgfkeyscurrentpath\space - #1}
+% 	\PackageError{pgfkeys}{The '#1' key has not been set to a value.}{}}
+% \begingroup
+%   \lccode`\Q=`\-
+%   \lccode`\N=`\N
+%   \lccode`\V=`\V
+%   \lowercase{\endgroup
+%     \newcommand*\pgfkeys@notset[1]{QNoValue-\pgfkeys@@notset{#1}}}
+% \newcommand*\pgfkeys@makeNotSet[1]{
+% 	\expandafter\def\csname pgfkeys@notset@#1\endcsname{%
+% 		\pgfkeys@notset{#1}%
+% 	}}
+% \pgfqkeys{/handlers}{%
+%   .initial without value/.code/.expand once={%
+% 		\pgfkeys@makeNotSet{\pgfkeyscurrentpath}%
+% 	  \expandafter\pgfkeyssetvalue\expandafter{\expandafter\pgfkeyscurrentpath\expandafter}\expandafter{\csname pgfkeys@notset@\pgfkeyscurrentpath\endcsname}%
+%   },
+%   .unset/.code={
+%     \pgfkeysifdefined{\pgfkeyscurrentpath}{
+% 	    \pgfkeys{\pgfkeyscurrentpath/.initial without value}
+% 	  }{
+% 		  \PackageError{pgfkeys}{The \pgfkeyscurrentpath\space key has not been initialized.}{}
+% 		}
+% 	}
+% }
+
+\newcommand*\pgfkeys@@notset{\PackageError{pgfkeys}
+  {Key not set to a value}{}}
 \begingroup
   \lccode`\Q=`\-
   \lccode`\N=`\N
   \lccode`\V=`\V
   \lowercase{\endgroup
-    \def\pgfkeys@notset{QNoValue-\pgfkeys@@notset}}
+    \newcommand*\pgfkeys@notset{QNoValue-\pgfkeys@@notset}}
 \pgfqkeys{/handlers}{%
   .initial without value/.code/.expand once={%
 	  \expandafter\pgfkeyssetvalue\expandafter{\expandafter\pgfkeyscurrentpath\expandafter}\expandafter{\pgfkeys@notset}%
@@ -57,7 +84,6 @@
 		}
 	}
 }
-
 \newcommand{\IfKeySetByUserTF}[3]{%
 	\expandafter\ifx\csname pgfk@#1\endcsname\pgfkeys@notset%
 		#3%
@@ -127,14 +153,14 @@
     course/.initial without value,
 %
 		candidate name/.initial without value,
-		candidate email/.initial without value,
-		candidate address/.initial without value,
+		candidate contacts/.initial without value,
 %
 		candidate use gender/.is choice,
 		candidate use gender/feminine/.code=\booltrue{@candidategenderf},
     candidate use gender/masculine/.code=\boolfalse{@candidategenderf},
 %
-    supervisor/.initial without value,
+    supervisor name/.initial without value,
+		supervisor contacts/.initial without value,
 %
     cosupervisors/.initial={},
 		cosupervisor/.style={cosupervisors={#1}},
@@ -142,6 +168,10 @@
     title/.initial without value,
 %
     subtitle/.initial without value,
+%
+		revision/.initial without value,
+%
+		date/.initial without value,
 %
     academic year/.initial without value,
 		phd cycle/.initial without value,
@@ -151,12 +181,20 @@
     showframes/.is if=@showframes,
     showframes/.initial=false,
 %
+		pdfmetadata/.is if=@pdfmetadata,
+		pdfmetadata/.initial=true,
+%
     counters by chapter/.is if=@countersbychapter,
     counters by chapter/.initial=false,
     countersbychapter/.forward to=/uniud/counters by chapter,
 %
-		pdfmetadata/.is if=@pdfmetadata,
-		pdfmetadata/.initial=true,
+		content lists style/.is choice,
+		content lists style/.cd,
+			compact/.code = {\def\uniud@cftclears{0}},
+			single/.code  = {\def\uniud@cftclears{1}},
+			double/.code  = {\def\uniud@cftclears{2}},
+	/uniud,
+		content lists style=compact,
 }
 
 % An helper for updating 'affiliation' key
@@ -178,7 +216,7 @@
 	% check if the macro is expanded after the preamble
 	\ifx\@onlypreamble\@notprerr
 		\@CheckRequiredOpt{title}
-		\@CheckRequiredOpt{supervisor}
+		\@CheckRequiredOpt{supervisor name}
 		\@CheckRequiredOpt{candidate name}
 		\if@phd%
 			% 'cycle' is required for bachelor and master thesis
@@ -201,6 +239,30 @@
 		\uniud@ValidateOptions
 	}
 }
+
+% Override memoir's document metadata
+\renewcommand*\title[1]{
+	\uniudset*{title=#1}
+}
+\renewcommand*\author[1]{
+	\uniudset*{candidate name=#1}
+}
+\renewcommand*\date[1]{
+	\uniudset*{date=#1}
+}
+\newcommand*\thetitle{%
+	\IfKeySetByUserT{/uniud/title}{%
+		\pgfkeysvalueof{/uniud/title}%
+	}}
+\newcommand*\theauthor{
+	\IfKeySetByUserT{/uniud/candidate name}{%
+		\pgfkeysvalueof{/uniud/candidate name}%
+	}}
+\newcommand*\thedate{%
+	\IfKeySetByUserT{/uniud/date}{%
+		\pgfkeysvalueof{/uniud/date}%
+	}}
+
 
 % Process class options
 \ProcessPgfOptions{/uniud}
@@ -405,8 +467,44 @@
 \pagestyle{uniud}
 
 %
-% TOC
+% Content lists (toc, lof, lot, etc.)
 %
+
+% Patch content list heads for these are based on chapters
+\@ifundefined{uniud@cftclears}{\def\uniud@cftclears{0}}
+\newcommand*{\uniud@patchcfthead}[1]{
+	% add space between lists
+	\@namedef{#1headstart}{%
+		\if\uniud@cftclears2%
+			\cleardoublepage%
+		\else%
+			\if\uniud@cftclears1%
+					\clearpage%
+			\else
+					\vspace{1.3\afterchapskip}%
+			\fi%
+		\fi%
+	}
+	\@namedef{after#1title}{%
+		\afterchaptertitle%
+		\if\uniud@cftclears2\else%
+			\if\uniud@cftclears1\else
+					\vspace{-.3\afterchapskip}%
+			\fi%
+		\fi%
+	}
+}
+\let\memoir@newlistof\newlistof
+\renewcommand*{\newlistof}[3]{
+	\memoir@newlistof{#1}{#2}{#3}
+	\uniud@patchcfthead{#2}
+}
+% and existing ones
+\uniud@patchcfthead{toc}
+\uniud@patchcfthead{lof}
+\uniud@patchcfthead{lot}
+
+% TOC
 \setcounter{tocdepth}{2}
 \renewcommand{\cftbookfont}{\normalfont}
 \renewcommand{\cftbookpagefont}{\normalfont} 
@@ -420,12 +518,11 @@
 %
 \newenvironment{dedication}{
 	\clearpage
+	\ensureonecol
  	\thispagestyle{empty}
  	\par\vspace*{.35\textheight}%
 	\centering\small%
 }{\cleardoublepage}
-
-
 
 %
 % Acknowledgements
@@ -437,13 +534,28 @@
 	\if@mainmatter
 		\ClassError{Uniud}{Acknowledgements cannot be used in the main matter.}{}	
 	\else
+		\ensureonecol
 		\if@addacktotoc
 			\chapter{\GetTranslation{acknowledgements}}
 		\else
 			\chapter*{\GetTranslation{acknowledgements}}
 		\fi
 	\fi
-}{\cleardoublepage}
+}{}
+% \newenvironment{acknowledgements*}{
+% 	\if@mainmatter
+% 		\ClassError{Uniud}{Acknowledgements cannot be used in the main matter.}{}	
+% 	\else
+% 		\chapter*{\GetTranslation{acknowledgements}}
+% 	\fi
+% }{}
+% \newenvironment{acknowledgements}{
+% 	\if@mainmatter
+% 		\ClassError{Uniud}{Acknowledgements cannot be used in the main matter.}{}	
+% 	\else
+% 		\chapter{\GetTranslation{acknowledgements}}
+% 	\fi
+% }{}
 
 %
 % Abstract
@@ -452,11 +564,12 @@
 	\if@mainmatter
 		\ClassError{Uniud}{Abstract cannot be used in the main matter.}{}	
 	\else
+		\ensureonecol
 		\chapter*{\abstractname}
 		% use memoir's handling of abstract and toc instead
 		\put@bsintoc
 	\fi
-}{\cleardoublepage}
+}{}
 
 %
 % Floats
@@ -476,6 +589,8 @@
 \RequirePackage[capitalise,noabbrev,nameinlink]{cleveref}
 %\RequirePackage{autonum}
 %\if@cref@capitalise
+
+\providecommand{\email}[1]{\href{mailto:#1}{#1}}
 
 % pdf setup
 \if@pdfmetadata
@@ -664,6 +779,9 @@
 \DeclareTranslation{Italian}{candidate (f)}{Candidata}
 \DeclareTranslation{Italian}{candidate (m)}{Candidato}
 
+\DeclareTranslationFallback {contacts}{Contacts}
+\DeclareTranslation{Italian}{contacts}{Contatti}
+
 \DeclareTranslationFallback {acknowledgements}{Acknowledgements}
 \DeclareTranslation{Italian}{acknowledgements}{Ringraziamenti}
 
@@ -673,13 +791,15 @@
 \RequirePackage{xstring}
 
 \renewcommand\maketitle{%
+	\begingroup
   \newlength\@borders
   \setlength\@borders{2cm}
-  \let\oldcleardoublepage\cleardoublepage
+  %\let\oldcleardoublepage\cleardoublepage
   \let\cleardoublepage\clearpage
 	\def\scLarge{\fontsize{15pt}{14.4pt}\selectfont}
 	\def\scnormal{\fontsize{12.0pt}{11.5pt}\selectfont}
-	\def\blockskip{\vskip4pt}
+	\def\ncnormal{\fontsize{10.0pt}{12pt}\selectfont}
+	\def\ncLarge{\fontsize{12.0pt}{14pt}\selectfont}
   % cover page
   \begin{titlingpage}
 		\newlength\tpbox@width
@@ -727,11 +847,11 @@
 				\par%
         \fontsize{30pt}{22pt}\selectfont%
 				\MakeTextLowercase{\pgfkeysvalueof{/uniud/title}}\par%
-				\if\pgfkeysvalueof{/uniud/subtitle}\empty\else%
+				\IfKeySetByUserT{/uniud/subtitle}{%
 					\medskip%
 					\fontsize{24pt}{20pt}\selectfont%
 					\MakeTextLowercase{\pgfkeysvalueof{/uniud/subtitle}}\par%
-				\fi
+				}%
       \endgroup%
 			\vfill%
 			% candidate, supercisor, cosupervisors
@@ -749,7 +869,7 @@
 					\centering\scshape\scnormal%
 					\GetLCTranslation{supervisor}%
 					\scLarge\par%
-					\MakeTextLowercase{\pgfkeysvalueof{/uniud/supervisor}}%
+					\MakeTextLowercase{\pgfkeysvalueof{/uniud/supervisor name}}%
 					\if\pgfkeysvalueof{/uniud/cosupervisors}\empty\else
 						\par\bigskip%
 						\centering\scshape\scnormal%
@@ -794,26 +914,43 @@
     \calccentering{\unitlength}
     \begin{adjustwidth*}{\unitlength-\@borders}{-\unitlength-\@borders}%
       \begingroup%
-				\raggedright%
-				\normalsize%
- 				\IfKeySetByUserT{/uniud/candidate email}{%
-	        \pgfkeysvalueof{/uniud/candidate email}%
-	        \par\vskip4pt%
+				\raggedright\normalfont%
+				\def\uniud@blockskip{\relax}%
+				\newcommand{\uniud@printblock}[2]{%
+					\IfKeySetByUserTF{##1}{%
+						\uniud@blockskip%
+						##2%
+						\def\uniud@blockskip{\bigskip}%
+					}{\def\uniud@blockskip{\relax}}
 				}%
-				\IfKeySetByUserT{/uniud/candidate address}{%
-          \pgfkeysvalueof{/uniud/candidate address}%
-	        \par\vskip4pt%
-				}%
-        \IfKeySetByUserT{/uniud/inside cover note}{%
-          \vskip4pt%
-          \pgfkeysvalueof{/uniud/inside cover note}%
-	        \par\vskip4pt%
-				}%
+				%
+				\uniud@printblock{/uniud/candidate contacts}{%
+					\ncLarge\pgfkeysvalueof{/uniud/candidate name}\par%
+				  \ncnormal\pgfkeysvalueof{/uniud/candidate contacts}}\par%
+				%
+				\uniud@printblock{/uniud/supervisor contacts}{%
+					\ncLarge\pgfkeysvalueof{/uniud/supervisor name}\par%
+				  \ncnormal\pgfkeysvalueof{/uniud/supervisor contacts}}\par%
+				%
+				\IfKeySetByUserTF{/uniud/revision}{%
+					\uniud@blockskip%
+					\ncnormal\pgfkeysvalueof{/uniud/revision}%
+					\def\uniud@blockmidskip{\xspace-\xspace}%
+				}{\def\uniud@blockmidskip{\uniud@blockskip}}
+				\IfKeySetByUserTF{/uniud/date}{%
+					\uniud@blockmidskip%
+					\ncnormal\pgfkeysvalueof{/uniud/date}\par
+					\def\uniud@blockskip{\bigskip}%
+				}{\def\uniud@blockskip{\par\uniud@blockmidskip}}
+				%
+				\uniud@printblock{/uniud/inside cover note}{%
+          \ncnormal\pgfkeysvalueof{/uniud/inside cover note}}%
       \endgroup%
     \end{adjustwidth*}
   \end{titlingpage}
   % restore \cleardoublepage expected behaviour
-  \let\cleardoublepage\oldcleardoublepage
+  %\let\cleardoublepage\oldcleardoublepage
+	\endgroup
 }
 
 %-------------------------------------------------------------------------------
