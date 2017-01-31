@@ -117,10 +117,10 @@
 	% 'cosupervisors' 
 	% - List of strings
 	% - Lists the co-supervisors names, e.g.:
-	      cosupervisors={
-	        Name Surname,
-	        Name Surname
-	      },
+  cosupervisors={
+    Name Surname,
+    Name Surname
+  },
 	% ---------------------------------------
 	% 'cosupervisor' 
 	% - List of strings
@@ -133,7 +133,7 @@
 	% 'academic year' [conditional]
 	% - String
 	% - The field is mandatory whenever 'degree' is either 'bachelor' or 'master'.
-	%	academic year={YYYY/YY},
+	academic year={YYYY/YY},
 	% ---------------------------------------
 	% 'phd cycle' [conditional]
 	%	- String
@@ -231,39 +231,31 @@
 \end{dedication}
 
 % The environment 'acknowledgements' creates pages for acknowledgements. By 
-% default these are not listed in the table of contents (hereafter TOC). The 
-% macro '\acknowledgementsintoc' makes any following acknowledgements page 
-% appear in the TOC.
-%\acknowledgementsintoc
+% default these are not listed in the table of contents (hereafter TOC). 
 \begin{acknowledgements}
 	\blindtext
 \end{acknowledgements}
 
-%\begin{otherlanguage}{italian}
-%\begin{acknowledgements*}
-%	\blindtext
-%\end{acknowledgements*}
-%\end{otherlanguage}
-
-\cleardoublepage
+\begin{otherlanguage}{italian}
+\begin{acknowledgements*}
+	\blindtext
+\end{acknowledgements*}
+\end{otherlanguage}
 
 % The environment 'abstract' creates pages for the thesis abstract. By default
-% these are not listed in the TOC. The macro '\abstractintoc' makes any 
-% following abstract page appear in the TOC.
-%\abstractintoc
-
+% these are not listed in the TOC. 
 \begin{abstract}
 	\blindtext
 \end{abstract}
 
 % Sometimes, a translation of the thesis abstract may be required. The main language can be changed locally by means of babel's 'otherlanguage' environment. (The same applies to acknowledgements.)
 \begin{otherlanguage}{italian}
-	\begin{abstract}
+	\begin{abstract*}
 		\blindtext
-	\end{abstract}
+	\end{abstract*}
 \end{otherlanguage}
 
-\cleardoublepage
+% \cleardoublepage
 
 % The commands '\tableofcontents', '\listoffigures', and '\listoftables' typeset, respectively, the table of contents (TOC), the list of figures (LOF), and the list of tables (LOT). All these commands have a starred version (e.g. '\tableofcontents*') which does not add the respective title in the TOC. By default listings like TOC, LOF, and LOT do not always start on odd (or new) pages like ordinary chapters. This behaviour can be changed locally via '\clearpage' and '\cleardoublepage' and globally via the class option 'content lists style'.
 

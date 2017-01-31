@@ -467,6 +467,55 @@
 \pagestyle{uniud}
 
 %
+% Front and back matter blocks (abstract, acknowledgements)
+%
+
+% Some flags associated akin to Memoir's @mainmatter
+\@ifundefined{if@frontmatter}{
+	\newif\if@frontmatter
+	\@frontmatterfalse
+	\addtodef{\frontmatter}{}{\@frontmattertrue}
+	\addtodef{\mainmatter}{}{\@frontmatterfalse}
+}{}
+\@ifundefined{if@backmatter}{
+	\newif\if@backmatter
+	\@backmatterfalse
+	\addtodef{\backmatter}{}{\@backmattertrue}
+	\addtodef{\appendix}{}{\@backmatterfalse}
+}{}
+
+% Dedication page
+\newenvironment{dedication}{
+	\clearpage
+	\ensureonecol
+ 	\thispagestyle{empty}
+ 	\par\vspace*{.35\textheight}%
+	\centering\small%
+}{\cleardoublepage}
+
+\newcommand*{\newfronmatterblock}[2]{
+	\@namedef{#1}{%
+		\if@frontmatter
+			\chapter{#2}
+		\else
+			\ClassError{Uniud}{Environment '#1' can be used only in the front matter}{}
+		\fi}
+	\@namedef{#1*}{%
+		\if@frontmatter
+			\chapter*{#2}
+		\else
+			\ClassError{Uniud}{Environment '#1' can be used only in the front matter}{}	
+		\fi}
+	\@namedef{end#1}{\@ifstar{}{}
+		\cleardoublepage
+	}
+}
+
+% Acknowledgements
+\newfronmatterblock{acknowledgements}{\GetTranslation{acknowledgements}}
+\newfronmatterblock{abstract}{\abstractname}
+
+%
 % Content lists (toc, lof, lot, etc.)
 %
 
@@ -512,64 +561,6 @@
 \renewcommand{\cftpartpagefont}{\normalfont} 
 \renewcommand{\cftchapterfont}{\normalfont}  
 \renewcommand{\cftchapterpagefont}{\normalfont} 
-
-%
-% Dedication
-%
-\newenvironment{dedication}{
-	\clearpage
-	\ensureonecol
- 	\thispagestyle{empty}
- 	\par\vspace*{.35\textheight}%
-	\centering\small%
-}{\cleardoublepage}
-
-%
-% Acknowledgements
-%
-\newbool{@addacktotoc}
-\boolfalse{@addacktotoc}
-\newcommand\acknowledgementsintoc{\booltrue{@addacktotoc}}
-\newenvironment{acknowledgements}{
-	\if@mainmatter
-		\ClassError{Uniud}{Acknowledgements cannot be used in the main matter.}{}	
-	\else
-		\ensureonecol
-		\if@addacktotoc
-			\chapter{\GetTranslation{acknowledgements}}
-		\else
-			\chapter*{\GetTranslation{acknowledgements}}
-		\fi
-	\fi
-}{}
-% \newenvironment{acknowledgements*}{
-% 	\if@mainmatter
-% 		\ClassError{Uniud}{Acknowledgements cannot be used in the main matter.}{}	
-% 	\else
-% 		\chapter*{\GetTranslation{acknowledgements}}
-% 	\fi
-% }{}
-% \newenvironment{acknowledgements}{
-% 	\if@mainmatter
-% 		\ClassError{Uniud}{Acknowledgements cannot be used in the main matter.}{}	
-% 	\else
-% 		\chapter{\GetTranslation{acknowledgements}}
-% 	\fi
-% }{}
-
-%
-% Abstract
-%
-\renewenvironment{abstract}{
-	\if@mainmatter
-		\ClassError{Uniud}{Abstract cannot be used in the main matter.}{}	
-	\else
-		\ensureonecol
-		\chapter*{\abstractname}
-		% use memoir's handling of abstract and toc instead
-		\put@bsintoc
-	\fi
-}{}
 
 %
 % Floats
@@ -793,7 +784,7 @@
 \renewcommand\maketitle{%
 	\begingroup
   \newlength\@borders
-  \setlength\@borders{2cm}
+  \setlength\@borders{1cm}
   %\let\oldcleardoublepage\cleardoublepage
   \let\cleardoublepage\clearpage
 	\def\scLarge{\fontsize{15pt}{14.4pt}\selectfont}
@@ -802,14 +793,26 @@
 	\def\ncLarge{\fontsize{12.0pt}{14pt}\selectfont}
   % cover page
   \begin{titlingpage}
+		\calccentering{\unitlength}
 		\newlength\tpbox@width
-		\setlength\tpbox@width{\dimexpr.5\textwidth-.5\columnsep}
-    \calccentering{\unitlength}
+		\vspace*{-2cm}
     \begin{adjustwidth*}{\unitlength-\@borders}{-\unitlength-\@borders}%
+			\setlength\tpbox@width{\dimexpr.5\textwidth-.5\columnsep}
 			\centering
+			\IfKeySetByUserT{/uniud/logo}{%
+				\newlength\uniud@logo@height%
+				\IfKeySetByUserTF{/uniud/logo height}{%
+					\setlength\expandafter\pgfkeysvalueof{/uniud/logo height}%
+				}{%
+					\setlength\uniud@logo@height{2cm}%
+				}%
+				\edef\uniud@logopath{\pgfkeysvalueof{/uniud/logo}}
+				\includegraphics[draft=false,height=\uniud@logo@height]{\uniud@logopath}
+				\par\bigskip%
+			}
       \begingroup%
         \scshape%
-				\scLarge%
+				\scnormal%
 				\edef\uniud@affiliation{\pgfkeysvalueof{/uniud/affiliation}}
 				\foreach \line in \uniud@affiliation{%
 					\MakeTextLowercase{\line}\par%
@@ -823,29 +826,23 @@
 					  \GetLCTranslation{bachelorin}
 					\fi%
 		  	\fi%
-      	\MakeTextLowercase{\pgfkeysvalueof{/uniud/course}}\par
-      \endgroup%
-			\vfill%
-			\IfKeySetByUserT{/uniud/logo}{%
-				\newlength\uniud@logo@height%
-				\IfKeySetByUserTF{/uniud/logo height}{%
-					\setlength\expandafter\pgfkeysvalueof{/uniud/logo height}%
+				\IfKeySetByUserTF{/uniud/phd cycle}{
+					\MakeTextLowercase{\pgfkeysvalueof{/uniud/course}},
+					\GetLCTranslation{phdcycle}
+					\MakeTextLowercase{\pgfkeysvalueof{/uniud/phd cycle}}%
 				}{%
-					\setlength\uniud@logo@height{3cm}%
+					\MakeTextLowercase{\pgfkeysvalueof{/uniud/course}}%
 				}%
-				\vskip-.5\uniud@logo@height%
-				\edef\uniud@logopath{\pgfkeysvalueof{/uniud/logo}}
-				\includegraphics[draft=false,height=\uniud@logo@height]{\uniud@logopath}
-				\vskip-.5\uniud@logo@height%
-			}
-      \vfill%
-      \begingroup%
+				\par%  
+		  \endgroup%
+			\vfill%
+		  \begingroup%
         \scshape%
 				\scnormal%
 				\GetLCTranslation{dissertation}
 				\bigskip%
 				\par%
-        \fontsize{30pt}{22pt}\selectfont%
+        \fontsize{32pt}{22pt}\selectfont%
 				\MakeTextLowercase{\pgfkeysvalueof{/uniud/title}}\par%
 				\IfKeySetByUserT{/uniud/subtitle}{%
 					\medskip%
@@ -854,60 +851,61 @@
 				}%
       \endgroup%
 			\vfill%
-			% candidate, supercisor, cosupervisors
+			% candidate, supervisor, cosupervisors
+			%\par\vspace*{-2cm}%
       \begingroup%
 				\parbox[t]{\tpbox@width}{%
-					\centering\scshape\scnormal%
-					\if@candidategenderf%
-						\GetLCTranslation{candidate (f)}%
-					\else%
-						\GetLCTranslation{candidate (m)}%
-					\fi%
-					\scLarge\par%
-					\MakeTextLowercase{\pgfkeysvalueof{/uniud/candidate name}}%
+				\centering\scshape%
+				\scnormal%
+				\if@candidategenderf%
+					\GetLCTranslation{candidate (f)}%
+				\else%
+					\GetLCTranslation{candidate (m)}%
+				\fi%
+				\scLarge\par%
+				\MakeTextLowercase{\pgfkeysvalueof{/uniud/candidate name}}%
 				}\hfill\parbox[t]{\tpbox@width}{%
-					\centering\scshape\scnormal%
-					\GetLCTranslation{supervisor}%
-					\scLarge\par%
-					\MakeTextLowercase{\pgfkeysvalueof{/uniud/supervisor name}}%
-					\if\pgfkeysvalueof{/uniud/cosupervisors}\empty\else
-						\par\bigskip%
-						\centering\scshape\scnormal%
-						\edef\uniud@supervisors{\pgfkeysvalueof{/uniud/cosupervisors}}%
-						\StrCount{\uniud@supervisors}{,}[\uniud@numcosupervisors]
-						\ifnum\uniud@numcosupervisors>0\relax
-					  	\GetLCTranslation{cosupervisors}%
-						\else%
-							\GetLCTranslation{cosupervisor}%
-						\fi%
-					  \scLarge%
-						\foreach \name in \uniud@supervisors{%
-					  	\par\MakeTextLowercase{\name}%
-						}%
-					\fi
+				\centering\scshape%
+				\scnormal%
+				\GetLCTranslation{supervisor}%
+				\scLarge\par%
+				\MakeTextLowercase{\pgfkeysvalueof{/uniud/supervisor name}}%
+				\if\pgfkeysvalueof{/uniud/cosupervisors}\empty\else
+					\par\bigskip%
+					\scnormal%
+					\edef\uniud@supervisors{\pgfkeysvalueof{/uniud/cosupervisors}}%
+					\StrCount{\uniud@supervisors}{,}[\uniud@numcosupervisors]
+					\ifnum\uniud@numcosupervisors>0\relax
+				  	\GetLCTranslation{cosupervisors}%
+					\else%
+						\GetLCTranslation{cosupervisor}%
+					\fi%
+				  \scLarge%
+					\foreach \name in \uniud@supervisors{%
+				  	\par\MakeTextLowercase{\name}%
+					}%
+				\fi
 				}
 			\endgroup%
 			\vfill%
-			% phd cycle and academic year
-			\begingroup%
-				\IfKeySetByUserT{/uniud/phd cycle}{
-					\parbox[t]{\tpbox@width}{%
-						\centering\scshape\scnormal%
-		        \GetLCTranslation{phdcycle}%
-		        \scLarge\par%
-		        \MakeTextLowercase{\pgfkeysvalueof{/uniud/phd cycle}}%
-					}%
-					\IfKeySetByUserT{/uniud/academic year}{\hfill}%
-				}%
-				\IfKeySetByUserT{/uniud/academic year}{
-					\parbox[t]{\tpbox@width}{%
-						\centering\scshape\scnormal%
-		        \GetLCTranslation{academicyear}%
-		        \scLarge\par%
-		        \MakeTextLowercase{\pgfkeysvalueof{/uniud/academic year}}%
-				}}%
-      \endgroup%
+			% \begingroup%
+			% 	\IfKeySetByUserT{/uniud/phd cycle}{
+			% 		\parbox[t]{\tpbox@width}{%
+			% 			\centering\scshape\scnormal%
+		  %       \GetLCTranslation{phdcycle}%
+		  %       \scLarge\par%
+		  %       \MakeTextLowercase{\pgfkeysvalueof{/uniud/phd cycle}}%
+			% 		}%
+			% 		\IfKeySetByUserT{/uniud/academic year}{\hfill}%
+			% 	}%
+			\IfKeySetByUserT{/uniud/academic year}{
+					\centering\scshape\scnormal%
+	        \GetLCTranslation{academicyear}
+	        \MakeTextLowercase{\pgfkeysvalueof{/uniud/academic year}}%
+			}%
+      % \endgroup%
     \end{adjustwidth*}
+		\vspace*{-1cm}
   \end{titlingpage}
 	% cover's back
 	\begin{titlingpage}
