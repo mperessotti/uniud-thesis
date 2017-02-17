@@ -270,8 +270,7 @@
 % We are based on memoir, so let's load it
 \LoadClass[a4paper,11pt]{memoir}
 
-% uniud utility package
-%\RequirePackage{uniud}
+%\setlrmarginsandblock{4cm}{4cm}{*}
 
 % Page Layout
 \checkandfixthelayout
@@ -282,18 +281,23 @@
 
 \setlength\parskip{0pt}
 
-% Two columns layout
-\setlength\columnsep{20pt}
+
 
 %
 % Fonts
 %
 
+%\RequirePackage[
+%	light,
+%	largesmallcaps,
+%	fulloldstylenums,
+%]{kpfonts}
+
 % Charter main font, lining figures in math, osf in text
 \RequirePackage[scaled=.98,sups,osf]{XCharter}
 % Bera Sans sans-serif font
 \RequirePackage[scaled=0.86]{berasans}
- % Inconsolata monospace font
+% Inconsolata monospace font
 \RequirePackage[scaled=1.03]{inconsolata}
 
 \linespread{1.1}
@@ -301,7 +305,7 @@
 \RequirePackage[
 	% adjust spacing for smallcaps
 	tracking=smallcaps, 
-	letterspace=20
+	letterspace=10
 ]{microtype}
 
 %
@@ -524,6 +528,7 @@
 \newcommand*{\uniud@patchcfthead}[1]{
 	% add space between lists
 	\@namedef{#1headstart}{%
+		\nouppercaseheads
 		\if\uniud@cftclears2%
 			\cleardoublepage%
 		\else%
