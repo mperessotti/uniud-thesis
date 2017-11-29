@@ -303,6 +303,7 @@
 \linespread{1.1}
 
 \RequirePackage[
+	final,
 	% adjust spacing for smallcaps
 	tracking=smallcaps, 
 	letterspace=10
@@ -628,49 +629,68 @@
 % This trick is needed to defer the expansion of the cref macro until the
 % typesetting point, because the macro is undefined at this point of the
 % preamble
-%\newcommand\@Cref@name[1]{\noexpand\noexpand\noexpand\csuse{Cref@#1@name}}
-\newcommand\@cref@name[1]{\noexpand\noexpand\noexpand\csuse{cref@#1@name}}
+\newcommand*{\DeclareCrefname}[5]{
+	\Crefname{#1}{#4}{#5}
+	\if@cref@capitalise
+		\crefname{#1}{#4}{#5}	
+	\else
+		\crefname{#1}{#2}{#3}	
+	\fi
+}
+\newcommand*\UseCrefname[1]{\noexpand\noexpand\noexpand\csuse{cref@#1@name}}
+
+\newcommand*\DeclareTheoremName[1]{
+	\DeclareCrefname{#1}
+		{\GetTranslationLC{#1}}
+		{\GetTranslationLC{#1s}}
+		{\GetTranslation{#1}}
+		{\GetTranslation{#1s}}
+}
+\let\UseTheoremName\UseCrefname
+
 
 \declaretheorem[
-  name=\@cref@name{theorem},
+  name=\UseTheoremName{theorem},
   parent=chapter,
 ]{theorem}
 
 \declaretheorem[
-  name=\@cref@name{corollary},
+  name=\UseTheoremName{corollary},
   sibling=theorem
 ]{corollary}
 
 \declaretheorem[
-  name=\@cref@name{proposition},
+  name=\UseTheoremName{proposition},
   sibling=theorem
 ]{proposition}
 
 \declaretheorem[
-  name=\@cref@name{lemma},
+  name=\UseTheoremName{lemma},
   sibling=theorem
 ]{lemma}
 
+\let\proof\relax
+\let\endproof\relax
 \declaretheorem[
-  name=\@cref@name{definition},
+  name=proof,
+  style=proof,
+  numbered=no,
+]{proof}
+
+\declaretheorem[
+  name=\UseTheoremName{definition},
   parent=chapter,
   style=definition
 ]{definition}
 
 \declaretheorem[
-  name=\@cref@name{remark},
+  name=\UseTheoremName{remark},
   parent=chapter,
   style=remark
 ]{remark}
 
 \declaretheorem[
-  name=\@cref@name{remark},
-  parent=chapter,
-  style=remark
-]{note}
-
-\declaretheorem[
-  name=\@cref@name{example},
+  name=\UseTheoremName{example},
   sibling=remark
 ]{example}
 
@@ -682,6 +702,7 @@
     \counterwithout{equation}{chapter}
     \counterwithout{theorem}{chapter}
     \counterwithout{definition}{chapter}
+    \counterwithout{definition}{remark}
   }{}
 }
 
@@ -697,35 +718,44 @@
 	spaceabove = .5em,
 	spacebelow = .5em,
 	postheadspace = .5em,
-	headfont=\normalfont\scshape,
+	headfont=\normalfont\large\mdseries\scshape,
 	notefont=\normalfont, notebraces={(}{)},
 	bodyfont=\normalfont\itshape,
-	headformat={\MakeTextLowercase{\expandafter\NAME{}} \NUMBER \NOTE}
+	headformat={\MakeTextLowercase{\expandafter\NAME{}} \NUMBER \normalsize\NOTE}
 ]{plain}
 
 \declaretheoremstyle[
 	spaceabove = .5em,
 	spacebelow = .5em,
 	postheadspace = .5em,
-	headfont=\normalfont\scshape,
+	headfont=\normalfont\large\mdseries\scshape,
 	notefont=\normalfont, notebraces={(}{)},
 	bodyfont=\normalfont\itshape,
-	headformat={\MakeTextLowercase{\expandafter\NAME{}} \NUMBER \NOTE}
+	headformat={\MakeTextLowercase{\expandafter\NAME{}} \NUMBER \normalsize\NOTE}
 ]{definition}
 
 \declaretheoremstyle[
 	spaceabove = .5em,
 	spacebelow = .5em,
 	postheadspace = .5em,
-	headfont=\normalfont\scshape,
+	headfont=\normalfont\large\mdseries\scshape,
 	notefont=\normalfont, notebraces={(}{)},
 	bodyfont=\normalfont,
-	headformat={\MakeTextLowercase{\expandafter\NAME{}} \NUMBER \NOTE},,
+	headformat={\MakeTextLowercase{\expandafter\NAME{}} \NUMBER \normalsize\NOTE},
 	qed={$\triangleleft$}
 ]{remark}
 
-% redefine ams proof environment to match the style used for theorems etc.
-\renewenvironment{proof}[1][\proofname] {\par\pushQED{\qed}\normalfont\topsep6\p@\@plus6\p@\relax\trivlist\item[\hskip\labelsep\normalfont\scshape\MakeTextLowercase{#1}\@addpunct{.}]\ignorespaces}{\popQED\endtrivlist\@endpefalse}
+\declaretheoremstyle[
+	spaceabove = .5em,
+	spacebelow = .5em,
+	postheadspace = .5em,
+	headfont=\normalfont\large\mdseries\scshape,
+	notefont=\normalfont, notebraces={(}{)},
+	bodyfont=\normalfont,
+	% unnumbered,
+	headformat={\MakeTextLowercase{\expandafter\NAME{}}\normalsize\xspace\NOTE},
+	qed={$\Box$}
+]{proof}
 
 %-------------------------------------------------------------------------------
 %	LOCALIZATION

@@ -155,11 +155,13 @@
 	%	inside cover note={}
 }
 
-%	FOREIGN ----------------------------------------------------------------------
+%	BABEL ----------------------------------------------------------------------
 \usepackage{babel}
 \usepackage[all]{foreign}
 \defasforeign[criteria]{criteria}
 \defasforeign[criterium]{criterium}
+
+%\hyphenation{}
 
 %	DOCUMENT ORGANIZATION --------------------------------------------------------
 \usepackage{subfiles}
@@ -196,6 +198,9 @@
 \addbibresource{dummy.bib} %biblio sources
 
 %	CROSS REFS -------------------------------------------------------------------
+\usepackage{nameref}
+\usepackage{hyperref}
+
 \hypersetup{
 	% do not highlight hyperlinks such as citations
 	hidelinks,
@@ -203,8 +208,32 @@
 	linktoc=all
 }
 
+% Clever cross references with \cref
+\usepackage[
+	% capitalise all reference names e.g. Theorem 3
+	capitalise,
+	% do not use abbreviations such as Fig. for Figure
+	noabbrev,
+	% include in the hyperlink also the reference name
+	nameinlink
+]{cleveref}
+
+% THEOREMS ---------------------------------------------------------------------
+
+\DeclareTranslationFallback {fact}{Fact}
+\DeclareTranslation{Italian}{fact}{Fatto}
+\DeclareTranslationFallback {facts}{Facts}
+\DeclareTranslation{Italian}{facts}{Fatti}
+\DeclareTheoremName{fact}
+
+\declaretheorem[
+  name=\UseTheoremName{fact},
+  sibling=theorem
+]{fact}
+
 %	TIKZ -------------------------------------------------------------------------
 \usepackage{tikz}
+
 
 % DEMO -------------------------------------------------------------------------
 \usepackage{lipsum,blindtext} % generates demo text
@@ -351,36 +380,46 @@ Description
 \section{Math}
 
 \begin{theorem}
-	\label{thm:first}
-	Theorem
+	\label{a-theorem}
+	A theorem
 \end{theorem}
 
 \begin{proof}
-	Proof
+	A proof
 \end{proof}
 
 \begin{corollary}
-	\label{cor:first}
-	Corollary
+	\label{a-corollary}
+	A corollary
 \end{corollary}
 
 \begin{proposition}
-	\label{prop:first}
-	Proposition
+	\label{a-proposition}
+	A proposition
 \end{proposition}
 
 \begin{lemma}
-	\label{lem:first}
-	Lemma
+	\label{a-lemma}
+	A lemma
 \end{lemma}
 
+\begin{fact}
+	\label{a-fact}
+	A fact
+\end{fact}
+
+\begin{fact}
+	\label{another-fact}
+	Another fact
+\end{fact}
+
 \begin{definition}
-	\label{def:first}
-	Definition
+	\label{a-definition}
+	A definition
 \end{definition}
 
-\begin{remark}
-	\label{rem:first}
+\begin{remark}[A long remark]
+	\label{a-remark}
 	\blindtext[1]
 \end{remark}
 
@@ -391,12 +430,21 @@ Description
 	\end{tikzpicture}
 	\end{center}
 	\caption{This figure has a very long caption\dots let's see if it comes out nice\dots}
-	\label{fig:first}
+	\label{a-figure}
 \end{figure}
 
 \section{Cross referencing and citations}
 
-Here are some references and citations: \Cref{def:first,fig:first}  \cite{article,book,booklet,conference,inbook,incollection,manual,mastersthesis,misc,phdthesis,proceedings,techreport,unpublished}.
+Here are some references and citations: 
+\begin{itemize}
+	\item \verb|\cref{a-theorem}| \cref{a-theorem};
+	\item \verb|\Cref{a-fact}| \Cref{a-fact};
+	\item \verb|\cref{a-fact,another-fact}| \cref{a-fact,another-fact};
+	\item \verb|\Cref{a-theorem,a-definition}| \Cref{a-theorem,a-definition};
+	\item \verb|\cite{...}| 
+	 \cite{article,book,booklet,conference,inbook,incollection,manual,mastersthesis,misc,phdthesis,proceedings,techreport,unpublished}.
+\end{itemize}
+
 
 \IfDocRootTF{A}{B}
 
